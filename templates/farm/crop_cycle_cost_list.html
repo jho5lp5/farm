@@ -1,0 +1,239 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}
+    System | Costos de Ciclo de Cultivo
+{% endblock title %}
+
+{% block body %}
+    {% if selected_crop %}
+        <!-- Título del Cultivo -->
+        <div class="card roboto-condensed-regular mb-3 shadow-sm" style="border: none; border-radius: 10px;">
+            <div class="card-body p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h3 class="mb-0 text-white text-center font-weight-bold">
+                    <i class="fas fa-seedling mr-2"></i>
+                    {{ selected_crop.crop_name|default:selected_crop.crop_type|upper }}
+                </h3>
+                {% if selected_crop.plot %}
+                    <p class="mb-0 text-center text-white-50 mt-2">
+                        <i class="fas fa-map-marked-alt mr-1"></i>
+                        Parcela: {{ selected_crop.plot.name }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tabla Resumen por Categorías -->
+        <div class="card roboto-condensed-regular mb-3 shadow-sm" style="max-width: 450px; margin: 0 auto;">
+            <div class="card-body p-2">
+                <table class="table table-sm table-bordered mb-0" style="background-color: #ffffff; font-size: 0.8rem; margin: 0 auto;">
+                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <tr>
+                            <th style="padding: 5px 8px; border-right: 1px solid #dee2e6; font-weight: 600; font-size: 0.75rem; text-align: left;">Insumo</th>
+                            <th class="text-right" style="padding: 5px 8px; font-weight: 600; font-size: 0.75rem;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category, amount in category_list %}
+                            <tr>
+                                <td style="padding: 5px 8px; border-right: 1px solid #dee2e6; font-size: 0.75rem;">{{ category }}</td>
+                                <td class="text-right font-weight-bold" style="padding: 5px 8px; font-size: 0.75rem;">S/ {{ amount|floatformat:2 }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted" style="padding: 8px; font-size: 0.75rem;">No hay costos registrados</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+                        <tr>
+                            <td class="font-weight-bold" style="padding: 6px 8px; border-right: 1px solid #dee2e6; font-size: 0.8rem;">TOTAL ACUMULADO</td>
+                            <td class="text-right font-weight-bold" style="padding: 6px 8px; font-size: 0.85rem;">S/ {{ total_accumulated|floatformat:2|default:"0.00" }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card roboto-condensed-regular">
+        <div class="card-header p-2">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0">
+                        <i class="fas fa-dollar-sign mr-2"></i>
+                        Costos de Ciclo de Cultivo
+                    </h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <select class="form-control form-control-sm" id="crop-selector" onchange="loadCropCosts()">
+                            <option value="">Seleccione un cultivo...</option>
+                            {% for crop in crop_set %}
+                                <option value="{{ crop.id }}" {% if crop.id|stringformat:"s" == crop_id %}selected{% endif %}>
+                                    {{ crop.crop_name|default:crop.crop_type }} - {{ crop.plot.name|default:"Sin parcela" }} ({{ crop.planting_date|date:"d/m/Y" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            {% if selected_crop %}
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'apps.farm:crop' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left mr-1"></i> Volver a Cultivos
+                        </a>
+                    </div>
+                    <div>
+                        <button type="button" onclick="showModalCreate()" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus mr-1"></i>
+                            Registrar Insumo
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Tabs Navigation -->
+            {% if selected_crop %}
+            <ul class="nav nav-tabs mb-3" id="costTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="agrochemicals-services-tab" data-toggle="tab" href="#agrochemicals-services" role="tab" aria-controls="agrochemicals-services" aria-selected="true">
+                        <i class="fas fa-flask mr-2"></i>
+                        Agroquímicos & Servicios
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="fertilizers-tab" data-toggle="tab" href="#fertilizers" role="tab" aria-controls="fertilizers" aria-selected="false">
+                        <i class="fas fa-seedling mr-2"></i>
+                        Fertilizantes
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+            
+            <!-- Tabs Content -->
+            <div class="tab-content" id="costTabsContent">
+                <div class="tab-pane fade show active" id="agrochemicals-services" role="tabpanel" aria-labelledby="agrochemicals-services-tab">
+                    <div id="crop-cycle-cost-grid-list-agrochemicals-services" class="table-responsive small">
+                        {% include "farm/crop_cycle_cost_grid_list.html" with cost_set=cost_set_agrochemicals_services cost_type='agrochemicals_services' total_accumulated=total_accumulated_agrochemicals_services %}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="fertilizers" role="tabpanel" aria-labelledby="fertilizers-tab">
+                    <div id="crop-cycle-cost-grid-list-fertilizers" class="table-responsive small">
+                        {% include "farm/crop_fertilizer_table.html" with cost_set=cost_set_fertilizers total_accumulated=total_accumulated_fertilizers selected_crop=selected_crop fertilizer_table_data=fertilizer_table_data fertilizer_dates=fertilizer_dates fertilizer_date_totals=fertilizer_date_totals last_update=last_update %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-crop-cycle-cost-create" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-crop-cycle-cost-update" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+
+{% endblock body %}
+
+{% block extrajs %}
+
+<script type="text/javascript">
+    // Global data for products and services - available for all modals
+    window.CropCycleCostData = {
+        products: [
+            {% for product in product_set %}
+            {
+                id: {{ product.id }},
+                name: "{{ product.name|escapejs }}",
+                unit: "{{ product.unit|escapejs }}",
+                unitPrice: "{% if product.unit_price %}{{ product.unit_price }}{% else %}0{% endif %}",
+                category: "{{ product.product_category|escapejs|default:'' }}",
+                categoryDisplay: "{{ product.get_product_category_display|escapejs|default:'' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        services: [
+            {% for service in service_set %}
+            {
+                id: {{ service.id }},
+                name: "{{ service.name|escapejs }}",
+                unit: "{{ service.unit|escapejs }}",
+                unitPrice: "{% if service.unit_price %}{{ service.unit_price }}{% else %}0{% endif %}",
+                serviceType: {% if service.service_type %}"{{ service.service_type.name|escapejs }}"{% else %}null{% endif %}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        unitChoices: [
+            {% for value, label in unit_set %}
+            {value: "{{ value|escapejs }}", label: "{{ label|escapejs }}"}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        productTypeChoices: [
+            {% for value, label in product_type_choices %}
+            {value: "{{ value|escapejs }}", label: "{{ label|escapejs }}"}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+    
+    // Validate and ensure numeric values
+    window.CropCycleCostData.products.forEach(function(product) {
+        product.unitPrice = parseFloat(product.unitPrice) || 0;
+    });
+    
+    window.CropCycleCostData.services.forEach(function(service) {
+        service.unitPrice = parseFloat(service.unitPrice) || 0;
+    });
+    
+    function loadCropCosts() {
+        let cropId = $('#crop-selector').val();
+        if (cropId) {
+            window.location.href = '/farm/crop_cycle_cost/?crop_id=' + cropId;
+        } else {
+            window.location.href = '/farm/crop_cycle_cost/';
+        }
+    }
+
+    function showModalCreate() {
+        let cropId = $('#crop-selector').val();
+        if (!cropId) {
+            toastr.error('Por favor seleccione un cultivo primero');
+            return;
+        }
+        $('#modal-crop-cycle-cost-create').empty();
+        $.ajax({
+            url: '/farm/modal_crop_cycle_cost_create/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'crop_id': cropId},
+            success: function (response) {
+                $('#modal-crop-cycle-cost-create').html(response.form);
+                $('#modal-crop-cycle-cost-create').modal('show');
+            },
+            fail: function (response) {
+                toastr.error('Error en la petición', '¡Mensaje!');
+            }
+        });
+    }
+
+    $(document).on('click', '.item-edit', function () {
+        let _pk = $(this).attr('pk');
+        $('#modal-crop-cycle-cost-update').empty();
+        $.ajax({
+            url: '/farm/modal_crop_cycle_cost_update/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': _pk},
+            success: function (response) {
+                $('#modal-crop-cycle-cost-update').html(response.form);
+                $('#modal-crop-cycle-cost-update').modal('show');
+            },
+            fail: function (response) {
+                toastr.error('Error en la petición', '¡Mensaje!');
+            }
+        });
+    });
+</script>
+
+{% endblock extrajs %}
+

@@ -1,0 +1,246 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-map-marked-alt mr-2"></i>
+                Registro de Nueva Parcela
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-plot" action="{% url 'apps.farm:create_plot' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="modal-body p-4">
+                <!-- Información Básica -->
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-primary">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Información Básica
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Nombre de la Parcela
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-name"
+                                           maxlength="200"
+                                           name="name" 
+                                           placeholder="Ingrese el nombre de la parcela"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-ruler-combined mr-1"></i>
+                                        Área en Hectáreas
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-area-hectares" 
+                                           name="area_hectares"
+                                           step="0.0001"
+                                           min="0.0001"
+                                           placeholder="0.0000"
+                                           required>
+                                    <small class="form-text text-muted">Área total en hectáreas</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-building mr-1"></i>
+                                        Sucursal
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-subsidiary-id"
+                                            name="subsidiary_id">
+                                        <option value="">Seleccione sucursal...</option>
+                                        {% for subsidiary in subsidiary_set %}
+                                            <option value="{{ subsidiary.id }}">{{ subsidiary.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>
+                                        Ubicación
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-location" 
+                                           maxlength="300"
+                                           name="location" 
+                                           placeholder="Ingrese la ubicación de la parcela">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-globe mr-1"></i>
+                                        Coordenadas (Lat, Long)
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-coordinates" 
+                                           maxlength="100"
+                                           name="coordinates" 
+                                           placeholder="Ej: -12.1234, -77.5678">
+                                    <small class="form-text text-muted">Coordenadas geográficas</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-align-left mr-1"></i>
+                                        Descripción
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-description" 
+                                              name="description"
+                                              rows="3"
+                                              placeholder="Ingrese la descripción de la parcela"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado y Observaciones -->
+                <div class="card border-secondary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-secondary">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Estado y Observaciones
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="id-active"
+                                               name="active" 
+                                               value="true"
+                                               checked>
+                                        <label class="custom-control-label font-weight-bold" for="id-active">
+                                            <i class="fas fa-toggle-on mr-1"></i>
+                                            Parcela Activa
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-observations" 
+                                              name="observations"
+                                              rows="3"
+                                              placeholder="Ingrese observaciones adicionales si es necesario"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-plot" type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Parcela
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Form validation
+    $('#form-plot').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#save-plot').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Guardando...');
+        
+        let data = new FormData($('#form-plot').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar la parcela');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-plot').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Parcela');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

@@ -1,0 +1,85 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}
+    System | Tipos de Cultivo
+{% endblock title %}
+
+{% block body %}
+    <div class="card roboto-condensed-regular">
+        <div class="card-header p-2" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <div class="d-flex align-items-center">
+                <h6 class="mb-0" style="color: #495057; font-weight: 600; margin-right: 1rem;">
+                    <i class="fas fa-seedling mr-2" style="color: #6c757d;"></i>
+                    Gestión de Tipos de Cultivo
+                </h6>
+                <div class="btn-group" role="group">
+                    <button type="button" 
+                            onclick="showModalView('modal_crop_type_create')"
+                            class="btn btn-sm"
+                            style="background-color: #007bff; color: #fff; border: 1px solid #007bff; padding: 0.25rem 0.75rem; border-radius: 0.5rem; transition: all 0.2s ease;">
+                        <i class="fas fa-plus mr-1"></i> Registrar Nuevo Tipo de Cultivo
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <div id="crop-type-grid-list"
+                 class="table-responsive">{% include "farm/crop_type_grid_list.html" %}</div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-crop-type-create" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-crop-type-update" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+
+{% endblock body %}
+
+{% block extrajs %}
+
+<style>
+.btn-group .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<script type="text/javascript">
+    function showModalView(route) {
+        $('#modal-crop-type-create').empty()
+        $.ajax({
+            url: '/farm/' + route + '/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': 1},
+            success: function (response) {
+                $('#modal-crop-type-create').html(response.form);
+                $('#modal-crop-type-create').modal('show');
+            },
+            fail: function (response) {
+                toastr.error('Error en la petición', '¡Mensaje!');
+            }
+        });
+    };
+    $(document).on('click', '.item-edit', function () {
+        let _pk = $(this).attr('pk');
+        $('#modal-crop-type-update').empty()
+        $.ajax({
+            url: '/farm/modal_crop_type_update/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': _pk},
+            success: function (response) {
+                $('#modal-crop-type-update').html(response.form);
+                $('#modal-crop-type-update').modal('show');
+            },
+            fail: function (response) {
+                toastr.error('Error en la petición', '¡Mensaje!');
+            }
+        });
+    });
+</script>
+{% endblock extrajs %}
+

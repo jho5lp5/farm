@@ -1,0 +1,149 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+            <h5 class="modal-title text-white">
+                <i class="fas fa-concierge-bell mr-2"></i>
+                Registrar Nuevo Tipo de Servicio
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-service-type" action="{% url 'apps.farm:create_service_type' %}" method="POST">
+            {% csrf_token %}
+            
+            <div class="modal-body p-4">
+                <div class="card border-info mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Información del Tipo de Servicio
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Nombre del Tipo de Servicio <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-name"
+                                           maxlength="100"
+                                           name="name" 
+                                           placeholder="Ingrese el nombre del tipo de servicio"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-align-left mr-1"></i>
+                                        Descripción
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-description" 
+                                              name="description"
+                                              rows="3"
+                                              placeholder="Ingrese la descripción del tipo de servicio (opcional)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="id-active"
+                                               name="active" 
+                                               value="true"
+                                               checked>
+                                        <label class="custom-control-label font-weight-bold" for="id-active">
+                                            <i class="fas fa-toggle-on mr-1"></i>
+                                            Tipo de Servicio Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-service-type" type="submit" class="btn btn-info">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Tipo de Servicio
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Form validation
+    $('#form-service-type').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#save-service-type').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Guardando...');
+        
+        let data = $(this).serialize();
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $(document).trigger('serviceTypeSaved');
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar el tipo de servicio');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-service-type').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Tipo de Servicio');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea').on('input', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

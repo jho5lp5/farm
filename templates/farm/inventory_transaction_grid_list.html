@@ -1,0 +1,205 @@
+{% load static %}
+{% if transaction_set %}
+    <div class="card roboto-condensed-regular">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-clipboard-list mr-2" style="color: #6c757d;"></i>
+                Kardex de Entradas y Salidas
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="table-inventory-transaction-list" class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <tr>
+                            <th class="text-center" style="width: 5%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-hashtag"></i>
+                            </th>
+                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-calendar-plus mr-1"></i>Fecha Ingreso
+                            </th>
+                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-arrow-down mr-1"></i>Cantidad Entrada (L)
+                            </th>
+                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-calendar-minus mr-1"></i>Fecha Salida
+                            </th>
+                            <th class="text-center" style="width: 18%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-seedling mr-1"></i>Razón (Sembrío)
+                            </th>
+                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-arrow-up mr-1"></i>Cantidad Salida (L)
+                            </th>
+                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-balance-scale mr-1"></i>Saldo
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-cogs mr-1"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        {% for t in transaction_set %}
+                            <tr class="align-middle" pk="{{ t.id }}" style="border-bottom: 1px solid #e9ecef;">
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.7rem; padding: 0.25em 0.5em;">{{ forloop.counter }}</span>
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    {% if t.entry_date %}
+                                        <span style="color: #28a745;">{{ t.entry_date|date:"d/m/Y" }}</span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    {% if t.entry_quantity %}
+                                        <span style="color: #28a745; font-weight: 500;">
+                                            <i class="fas fa-plus-circle mr-1"></i>{{ t.entry_quantity|floatformat:2 }} L
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    {% if t.exit_date %}
+                                        <span style="color: #dc3545;">{{ t.exit_date|date:"d/m/Y" }}</span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    {% if t.crop %}
+                                        <span class="badge" style="background-color: #d1ecf1; color: #0c5460; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #bee5eb;" title="{{ t.crop }}">
+                                            {{ t.crop.crop_name|default:t.crop.crop_type|truncatewords:3 }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.85rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    {% if t.exit_quantity %}
+                                        <span style="color: #dc3545; font-weight: 500;">
+                                            <i class="fas fa-minus-circle mr-1"></i>{{ t.exit_quantity|floatformat:2 }} L
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.8rem; padding: 0.35em 0.65em; font-weight: 600;">
+                                        <i class="fas fa-balance-scale mr-1"></i>{{ t.balance|floatformat:2 }} L
+                                    </span>
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <button class="btn btn-sm item-edit" 
+                                            pk="{{ t.id }}" 
+                                            title="Editar Transacción"
+                                            style="background-color: transparent; border: 1px solid #dee2e6; color: #6c757d; padding: 0.25rem 0.5rem; border-radius: 20px;">
+                                        <i class="fas fa-edit" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Total de transacciones: <strong>{{ transaction_set.count }}</strong>
+                    </small>
+                </div>
+                <div class="col-md-6 text-right">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-clock mr-1"></i>
+                        Última actualización:
+                        <strong>{{ "now"|date:"d/m/Y H:i" }}</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-clipboard-list fa-5x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">No hay registros de entradas y salidas</h4>
+            <p class="text-muted mb-0">
+                Use los botones "Registrar Entrada" o "Registrar Salida" para comenzar a registrar transacciones
+            </p>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+.table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+    padding: 0.5rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+    border-radius: 0.25rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-header h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.table-responsive {
+    border: none;
+}
+</style>
+

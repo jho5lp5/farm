@@ -1,0 +1,348 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-seedling mr-2"></i>
+                Registro de Nuevo Cultivo
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-crop" action="{% url 'apps.farm:create_crop' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="modal-body p-4">
+                <!-- Información Básica -->
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-primary">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Información Básica
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-map-marked-alt mr-1"></i>
+                                        Parcela
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-plot-id"
+                                            name="plot_id">
+                                        <option value="">Seleccione parcela...</option>
+                                        {% for plot in plot_set %}
+                                            <option value="{{ plot.id }}">{{ plot.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-seedling mr-1"></i>
+                                        Tipo de Cultivo
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-crop-type"
+                                           maxlength="200"
+                                           name="crop_type" 
+                                           list="crop-types-list"
+                                           placeholder="Ingrese o seleccione el tipo de cultivo"
+                                           required>
+                                    <datalist id="crop-types-list">
+                                        {% for crop_type in crop_type_set %}
+                                            <option value="{{ crop_type.name }}">
+                                        {% endfor %}
+                                    </datalist>
+                                    <small class="form-text text-muted">Puede escribir o seleccionar de la lista</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Nombre/Variedad del Cultivo
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-crop-name"
+                                           maxlength="200"
+                                           name="crop_name" 
+                                           placeholder="Ej: Maíz Amarillo, Uva Red Globe, etc.">
+                                    <small class="form-text text-muted">Nombre específico o variedad (opcional)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-chart-line mr-1"></i>
+                                        Estado
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-status"
+                                            name="status">
+                                        {% for value, label in status_set %}
+                                            <option value="{{ value }}" {% if value == 'PLANTING' %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-ruler-combined mr-1"></i>
+                                        Área Sembrada (ha)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-planted-area" 
+                                           name="planted_area"
+                                           step="0.0001"
+                                           min="0.0001"
+                                           placeholder="0.0000"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="card border-info mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-info">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            Fechas
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Fecha de Siembra
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-planting-date" 
+                                           name="planting_date"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar-check mr-1"></i>
+                                        Fecha Estimada de Cosecha
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-estimated-harvest-date" 
+                                           name="estimated_harvest_date">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar-day mr-1"></i>
+                                        Fecha Real de Cosecha
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-actual-harvest-date" 
+                                           name="actual_harvest_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rendimientos -->
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-success">
+                            <i class="fas fa-weight mr-2"></i>
+                            Rendimientos
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-chart-line mr-1"></i>
+                                        Rendimiento Esperado (kg/ha)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-expected-yield" 
+                                           name="expected_yield"
+                                           step="0.01"
+                                           min="0"
+                                           placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-weight mr-1"></i>
+                                        Rendimiento Real (kg/ha)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-actual-yield" 
+                                           name="actual_yield"
+                                           step="0.01"
+                                           min="0"
+                                           placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descripción y Observaciones -->
+                <div class="card border-secondary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-secondary">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Descripción y Observaciones
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-align-left mr-1"></i>
+                                        Descripción
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-description" 
+                                              name="description"
+                                              rows="3"
+                                              placeholder="Ingrese la descripción del cultivo"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-observations" 
+                                              name="observations"
+                                              rows="3"
+                                              placeholder="Ingrese observaciones adicionales si es necesario"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="id-active"
+                                               name="active" 
+                                               value="true"
+                                               checked>
+                                        <label class="custom-control-label font-weight-bold" for="id-active">
+                                            <i class="fas fa-toggle-on mr-1"></i>
+                                            Cultivo Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-crop" type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Cultivo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Form validation
+    $('#form-crop').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#save-crop').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Guardando...');
+        
+        let data = new FormData($('#form-crop').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar el cultivo');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-crop').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Cultivo');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

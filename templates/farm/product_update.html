@@ -1,0 +1,475 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h5 class="modal-title" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-edit mr-2" style="color: #6c757d;"></i>
+                Actualizar Producto
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #6c757d;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-product-update" action="{% url 'apps.farm:update_product' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" value="{{ product_obj.id }}" id="id-product-id" name="product_id">
+            
+            <div class="modal-body p-4" style="background-color: #ffffff;">
+                <!-- Información Básica -->
+                <div class="card mb-4" style="border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                            <i class="fas fa-info-circle mr-2" style="color: #6c757d;"></i>
+                            Información Básica
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Nombre del Producto
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-name"
+                                           maxlength="200"
+                                           name="name" 
+                                           value="{{ product_obj.name }}"
+                                           placeholder="Ingrese el nombre del producto"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-layer-group mr-1"></i>
+                                        Tipo de Producto
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-product-type"
+                                            name="product-type" 
+                                            required>
+                                        <option value="">Seleccione tipo...</option>
+                                        {% for value, label in product_type_set %}
+                                            <option value="{{ value }}" {% if product_obj.product_type == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3" id="type-dependent-field">
+                                <!-- Se mostrará Unidad si es PRODUCT o Tipo de Servicio si es SERVICE -->
+                                <div class="form-group" id="unit-field" style="display: {% if product_obj.product_type == 'PRODUCT' %}block{% else %}none{% endif %};">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-ruler mr-1"></i>
+                                        Unidad
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-unit"
+                                            name="unit"
+                                            required>
+                                        {% for value, label in unit_set %}
+                                            <option value="{{ value }}" {% if product_obj.unit == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group" id="service-type-field" style="display: {% if product_obj.product_type == 'SERVICE' %}block{% else %}none{% endif %};">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-concierge-bell mr-1"></i>
+                                        Tipo de Servicio <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <select class="form-control form-control-sm" 
+                                                id="id-service-type"
+                                                name="service-type">
+                                            <option value="">Seleccione tipo de servicio...</option>
+                                            {% for st in service_type_set %}
+                                                <option value="{{ st.id }}" {% if product_obj.service_type_id == st.id %}selected{% endif %}>{{ st.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-sm" onclick="showModalServiceType()" title="Gestionar Tipos de Servicio" style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; border-left: none; border-radius: 0 0.25rem 0.25rem 0;">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Requerido para servicios</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" id="product-category-field" style="display: {% if product_obj.product_type == 'PRODUCT' %}block{% else %}none{% endif %};">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tags mr-1"></i>
+                                        Categoría del Producto <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-product-category"
+                                            name="product-category">
+                                        <option value="">Seleccione categoría...</option>
+                                        {% for value, label in product_category_set %}
+                                            <option value="{{ value }}" {% if product_obj.product_category == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Requerido para productos físicos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Comercial -->
+                <div class="card mb-4" style="border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                            <i class="fas fa-briefcase mr-2" style="color: #6c757d;"></i>
+                            Información Comercial
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-dollar-sign mr-1"></i>
+                                        Precio Unitario <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-unit-price" 
+                                           name="unit-price"
+                                           step="0.01"
+                                           min="0"
+                                           value="{{ product_obj.unit_price|default:'' }}"
+                                           placeholder="0.00"
+                                           required>
+                                    <small class="form-text text-muted">Precio por unidad</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-trademark mr-1"></i>
+                                        Marca
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-brand" 
+                                           maxlength="100"
+                                           name="brand" 
+                                           value="{{ product_obj.brand|default:'' }}"
+                                           placeholder="Marca del producto"
+                                           {% if product_obj.product_type == 'SERVICE' %}readonly{% endif %}>
+                                    <small class="form-text text-muted" id="brand-help-text" style="display: {% if product_obj.product_type == 'SERVICE' %}block{% else %}none{% endif %};">No aplica para servicios</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar-alt mr-1"></i>
+                                        Fecha de Vencimiento
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-expiration-date" 
+                                           name="expiration-date"
+                                           value="{{ product_obj.expiration_date|date:'Y-m-d'|default:'' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado y Observaciones -->
+                <div class="card mb-4" style="border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                            <i class="fas fa-sticky-note mr-2" style="color: #6c757d;"></i>
+                            Estado y Observaciones
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="id-active"
+                                               name="active" 
+                                               value="true"
+                                               {% if product_obj.active %}checked{% endif %}>
+                                        <label class="custom-control-label font-weight-bold" for="id-active">
+                                            <i class="fas fa-toggle-on mr-1"></i>
+                                            Producto Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-observations" 
+                                              name="observations"
+                                              rows="3"
+                                              placeholder="Ingrese observaciones adicionales si es necesario">{{ product_obj.observations|default:'' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                <button type="button" class="btn btn-sm" data-dismiss="modal" style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; padding: 0.375rem 0.75rem; border-radius: 0.25rem;">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="update-product" type="submit" class="btn btn-sm" style="background-color: #ffc107; color: #212529; border: 1px solid #ffc107; padding: 0.375rem 0.75rem; border-radius: 0.25rem;">
+                    <i class="fas fa-save mr-1"></i>
+                    Actualizar Producto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+function showModalServiceType() {
+    $.ajax({
+        url: '/farm/modal_service_type_create/',
+        dataType: 'json',
+        type: 'GET',
+        success: function (response) {
+            $('#modal-service-type').remove();
+            $('body').append('<div class="modal fade" id="modal-service-type" tabindex="-1" role="dialog"></div>');
+            $('#modal-service-type').html(response.form);
+            $('#modal-service-type').modal('show');
+        },
+        error: function (response) {
+            toastr.error('Error al cargar el formulario de tipo de servicio');
+        }
+    });
+}
+
+function toggleProductFields() {
+    const productType = $('#id-product-type').val();
+    
+    if (productType === 'PRODUCT') {
+        // Mostrar categoría de producto
+        $('#product-category-field').show();
+        $('#id-product-category').prop('required', true);
+        
+        // Mostrar unidad y ocultar tipo de servicio en la misma columna
+        $('#unit-field').show();
+        $('#service-type-field').hide();
+        $('#id-unit').prop('required', true);
+        $('#id-service-type').prop('required', false);
+        
+        // Habilitar campo marca
+        $('#id-brand').prop('readonly', false);
+        $('#brand-help-text').hide();
+    } else if (productType === 'SERVICE') {
+        // Ocultar categoría de producto
+        $('#product-category-field').hide();
+        $('#id-product-category').prop('required', false);
+        
+        // Ocultar unidad y mostrar tipo de servicio en la misma columna
+        $('#unit-field').hide();
+        $('#service-type-field').show();
+        $('#id-unit').prop('required', false);
+        $('#id-service-type').prop('required', true);
+        
+        // Deshabilitar campo marca (readonly)
+        $('#id-brand').prop('readonly', true).val('');
+        $('#brand-help-text').show();
+    } else {
+        // Estado inicial - ocultar todo
+        $('#product-category-field').hide();
+        $('#service-type-field').hide();
+        $('#unit-field').show(); // Mostrar unidad por defecto
+        $('#id-product-category').prop('required', false);
+        $('#id-service-type').prop('required', false);
+        $('#id-unit').prop('required', true);
+        $('#id-brand').prop('readonly', false);
+        $('#brand-help-text').hide();
+    }
+}
+
+function loadServiceTypes() {
+    $.ajax({
+        url: '/farm/get_service_types/',
+        dataType: 'json',
+        type: 'GET',
+        success: function (response) {
+            if (response.success) {
+                const select = $('#id-service-type');
+                const currentValue = select.val();
+                select.empty();
+                select.append('<option value="">Seleccione tipo de servicio...</option>');
+                
+                response.service_types.forEach(function(st) {
+                    select.append(`<option value="${st.id}">${st.name}</option>`);
+                });
+                
+                if (currentValue) {
+                    select.val(currentValue);
+                }
+            }
+        },
+        error: function() {
+            console.error('Error al cargar tipos de servicio');
+        }
+    });
+}
+
+$(document).ready(function() {
+    // Initialize fields based on current product type
+    toggleProductFields();
+    
+    // Toggle fields based on product type
+    $('#id-product-type').on('change', toggleProductFields);
+    
+    // Load service types on page load
+    loadServiceTypes();
+    
+    // Form validation
+    $('#form-product-update').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val() || !$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+        
+        // Custom validation for product category or service type
+        const productType = $('#id-product-type').val();
+        if (productType === 'PRODUCT') {
+            if (!$('#id-product-category').val()) {
+                $('#id-product-category').addClass('is-invalid');
+                isValid = false;
+            }
+        } else if (productType === 'SERVICE') {
+            if (!$('#id-service-type').val()) {
+                $('#id-service-type').addClass('is-invalid');
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#update-product').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Actualizando...');
+        
+        let data = new FormData($('#form-product-update').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al actualizar el producto');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#update-product').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Actualizar Producto');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+    
+    // Listen for service type creation event
+    $(document).on('serviceTypeCreated', function() {
+        loadServiceTypes();
+    });
+});
+</script>
+
+<style>
+.form-label {
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-control-sm {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    color: #495057;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-control-sm:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: 0;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: none;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.custom-control-label {
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+    font-size: 0.75rem;
+}
+</style>
+

@@ -1,0 +1,514 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-edit mr-2"></i>
+                Actualizar Costo de Ciclo de Cultivo
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-crop-cycle-cost-update" action="{% url 'apps.farm:update_crop_cycle_cost' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="modal-body p-4">
+                <!-- Información Básica -->
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-primary">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Información Básica
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-seedling mr-1"></i>
+                                        Cultivo
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           value="{{ cost_obj.crop.crop_name|default:cost_obj.crop.crop_type }} - {{ cost_obj.crop.plot.name|default:'Sin parcela' }}"
+                                           readonly>
+                                    <input type="hidden" name="cost_id" value="{{ cost_obj.id }}">
+                                    <input type="hidden" name="crop_id" value="{{ cost_obj.crop.id }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Tipo de Insumo <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-product-type"
+                                            name="product_type"
+                                            required>
+                                        <option value="">Seleccione tipo...</option>
+                                        {% for value, label in product_type_choices %}
+                                            <option value="{{ value }}" {% if cost_obj.product.product_type == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione si será un Producto o Servicio</small>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-box mr-1"></i>
+                                        <span id="product-label">Producto/Insumo</span> <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-product-id"
+                                            name="product_id"
+                                            required>
+                                        <option value="">Seleccione primero el tipo de insumo...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Fecha de Aplicación <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-application-date" 
+                                           name="application_date"
+                                           value="{{ cost_obj.application_date|date:'Y-m-d' }}"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-weight mr-1"></i>
+                                        Cantidad <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-quantity" 
+                                           name="quantity"
+                                           step="0.0001"
+                                           min="0.0001"
+                                           value="{{ cost_obj.quantity }}"
+                                           placeholder="0.0000"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-ruler mr-1"></i>
+                                        Unidad <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-unit"
+                                            name="unit"
+                                            required>
+                                        <option value="">Seleccione unidad...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Aplicación -->
+                <div class="card border-info mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-info">
+                            <i class="fas fa-tasks mr-2"></i>
+                            Información de Aplicación
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tools mr-1"></i>
+                                        Método de Aplicación
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-application-method"
+                                           maxlength="100"
+                                           name="application_method" 
+                                           value="{{ cost_obj.application_method|default:'' }}"
+                                           placeholder="Ej: Foliar, Riego, Aplicación directa, etc.">
+                                    <small class="form-text text-muted">Opcional</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-flask mr-1"></i>
+                                        Dosificación
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-dosage"
+                                           maxlength="100"
+                                           name="dosage" 
+                                           value="{{ cost_obj.dosage|default:'' }}"
+                                           placeholder="Ej: 2 litros por hectárea, 500g por 100L de agua, etc.">
+                                    <small class="form-text text-muted">Opcional</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-user mr-1"></i>
+                                        Responsable
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-responsible-id"
+                                            name="responsible_id">
+                                        <option value="">Seleccione responsable...</option>
+                                        {% for user in user_set %}
+                                            <option value="{{ user.id }}" {% if cost_obj.responsible and user.id == cost_obj.responsible.id %}selected{% endif %}>
+                                                {{ user.get_full_name|default:user.username }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-cloud-sun mr-1"></i>
+                                        Condiciones Climáticas
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-weather-conditions"
+                                           maxlength="200"
+                                           name="weather_conditions" 
+                                           value="{{ cost_obj.weather_conditions|default:'' }}"
+                                           placeholder="Ej: Soleado, Nublado, Viento moderado, etc.">
+                                    <small class="form-text text-muted">Opcional</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Costos -->
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-success">
+                            <i class="fas fa-money-bill-wave mr-2"></i>
+                            Costos
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-dollar-sign mr-1"></i>
+                                        Costo de Aplicación (S/)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-application-cost" 
+                                           name="application_cost"
+                                           step="0.01"
+                                           min="0"
+                                           value="{{ cost_obj.application_cost|default:'' }}"
+                                           placeholder="0.00">
+                                    <small class="form-text text-muted">Costo unitario o costo de aplicación</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calculator mr-1"></i>
+                                        Costo Total (S/) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-total-cost" 
+                                           name="total_cost"
+                                           step="0.01"
+                                           min="0"
+                                           value="{{ cost_obj.total_cost|default:'' }}"
+                                           placeholder="0.00"
+                                           required>
+                                    <small class="form-text text-muted">Monto total invertido en esta aplicación</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="card border-secondary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-secondary">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Observaciones
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-observations" 
+                                              name="observations"
+                                              rows="3"
+                                              placeholder="Ingrese observaciones adicionales si es necesario">{{ cost_obj.observations|default:'' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="update-crop-cycle-cost" type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i>
+                    Actualizar Costo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Use global data from window.CropCycleCostData (defined in crop_cycle_cost_list.html)
+    if (!window.CropCycleCostData) {
+        console.error('CropCycleCostData no está disponible. Asegúrate de que el template principal esté cargado.');
+        toastr.error('Error: Los datos no están disponibles. Por favor recarga la página.');
+        return;
+    }
+    
+    const productsData = window.CropCycleCostData.products || [];
+    const servicesData = window.CropCycleCostData.services || [];
+    const unitChoices = window.CropCycleCostData.unitChoices || [];
+    
+    // Current product data
+    const currentProductId = {{ cost_obj.product.id }};
+    const currentProductType = "{{ cost_obj.product.product_type|escapejs }}";
+    const currentUnit = "{{ cost_obj.unit|escapejs }}";
+    
+    // Initialize product type and populate products/services
+    function initializeForm() {
+        const productType = currentProductType;
+        const productSelect = $('#id-product-id');
+        const unitSelect = $('#id-unit');
+        
+        if (productType) {
+            $('#id-product-type').val(productType).trigger('change');
+            // Small delay to ensure options are populated
+            setTimeout(function() {
+                productSelect.val(currentProductId).trigger('change');
+                // Set unit after product is selected
+                setTimeout(function() {
+                    unitSelect.val(currentUnit);
+                }, 100);
+            }, 100);
+        }
+    }
+    
+    // Handle product type change
+    $('#id-product-type').on('change', function() {
+        const productType = $(this).val();
+        const productSelect = $('#id-product-id');
+        const unitSelect = $('#id-unit');
+        
+        // Clear previous selections (but preserve if editing)
+        productSelect.empty().prop('disabled', false);
+        unitSelect.empty().prop('disabled', false);
+        
+        if (!productType) {
+            productSelect.append('<option value="">Seleccione primero el tipo de insumo...</option>');
+            unitSelect.append('<option value="">Seleccione primero un producto/servicio...</option>');
+            $('#product-label').text('Producto/Insumo');
+            return;
+        }
+        
+        // Debug: mostrar en consola qué tipo se seleccionó
+        console.log('Tipo seleccionado:', productType);
+        console.log('Productos disponibles:', productsData.length);
+        console.log('Servicios disponibles:', servicesData.length);
+        
+        if (productType === 'PRODUCT' || productType === 'Product') {
+            $('#product-label').text('Producto');
+            productSelect.append('<option value="">Seleccione producto...</option>');
+            
+            if (productsData.length === 0) {
+                productSelect.append('<option value="" disabled>No hay productos disponibles</option>');
+            } else {
+                productsData.forEach(function(product) {
+                    const categoryText = product.category ? ' (' + product.category + ')' : '';
+                    const unitPrice = parseFloat(product.unitPrice) || 0;
+                    const option = $('<option></option>')
+                        .attr('value', product.id)
+                        .attr('data-unit', product.unit || '')
+                        .attr('data-unit-price', unitPrice)
+                        .text(product.name + categoryText);
+                    if (product.id === currentProductId) {
+                        option.attr('selected', 'selected');
+                    }
+                    productSelect.append(option);
+                });
+            }
+        } else if (productType === 'SERVICE' || productType === 'Service') {
+            $('#product-label').text('Servicio');
+            productSelect.append('<option value="">Seleccione servicio...</option>');
+            
+            if (servicesData.length === 0) {
+                productSelect.append('<option value="" disabled>No hay servicios disponibles</option>');
+            } else {
+                servicesData.forEach(function(service) {
+                    const serviceTypeText = service.serviceType ? ' (' + service.serviceType + ')' : ' (Servicio)';
+                    const unitPrice = parseFloat(service.unitPrice) || 0;
+                    const option = $('<option></option>')
+                        .attr('value', service.id)
+                        .attr('data-unit', service.unit || '')
+                        .attr('data-unit-price', unitPrice)
+                        .text(service.name + serviceTypeText);
+                    if (service.id === currentProductId) {
+                        option.attr('selected', 'selected');
+                    }
+                    productSelect.append(option);
+                });
+            }
+        } else {
+            console.error('Tipo de producto desconocido:', productType);
+            productSelect.append('<option value="" disabled>Error: Tipo no reconocido</option>');
+        }
+    });
+    
+    // Auto-fill unit when product/service is selected
+    $('#id-product-id').on('change', function() {
+        const unitSelect = $('#id-unit');
+        const selectedOption = $(this).find('option:selected');
+        const unit = selectedOption.data('unit');
+        const unitPrice = selectedOption.data('unit-price');
+        const productType = $('#id-product-type').val();
+        
+        // Clear and populate unit select
+        unitSelect.empty().prop('disabled', false);
+        unitSelect.append('<option value="">Seleccione unidad...</option>');
+        
+        // Filter units based on product type
+        let filteredUnits = unitChoices;
+        if (productType === 'SERVICE') {
+            // For services, show service-related units
+            filteredUnits = unitChoices.filter(function(u) {
+                return ['HOUR', 'DAY', 'SERVICE'].includes(u.value);
+            });
+        }
+        
+        filteredUnits.forEach(function(unitChoice) {
+            const selected = unitChoice.value === unit || unitChoice.value === currentUnit ? 'selected' : '';
+            unitSelect.append('<option value="' + unitChoice.value + '" ' + selected + '>' + unitChoice.label + '</option>');
+        });
+        
+        // Auto-fill application cost if available and not already set
+        if (unitPrice && unitPrice > 0 && !$('#id-application-cost').val()) {
+            $('#id-application-cost').val(parseFloat(unitPrice).toFixed(2));
+            calculateTotalCost();
+        }
+    });
+    
+    // Calculate total cost when quantity or application cost changes
+    function calculateTotalCost() {
+        let quantity = parseFloat($('#id-quantity').val()) || 0;
+        let applicationCost = parseFloat($('#id-application-cost').val()) || 0;
+        
+        if (quantity > 0 && applicationCost > 0) {
+            let total = quantity * applicationCost;
+            $('#id-total-cost').val(total.toFixed(2));
+        }
+    }
+    
+    // Initialize form on load
+    initializeForm();
+
+    $('#id-quantity, #id-application-cost').on('input', calculateTotalCost);
+
+    // Form validation
+    $('#form-crop-cycle-cost-update').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#update-crop-cycle-cost').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Actualizando...');
+        
+        let data = new FormData($('#form-crop-cycle-cost-update').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al actualizar el costo');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#update-crop-cycle-cost').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Actualizar Costo');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

@@ -1,0 +1,246 @@
+{% load static %}
+{% if crop_set %}
+    <div class="card roboto-condensed-regular">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-seedling mr-2" style="color: #6c757d;"></i>
+                Lista de Cultivos
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="table-crop-list" class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <tr>
+                            <th class="text-center" style="width: 5%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-hashtag"></i>
+                            </th>
+                            <th class="text-center" style="width: 18%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-seedling mr-1"></i>Cultivo
+                            </th>
+                            <th class="text-center" style="width: 15%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-map-marked-alt mr-1"></i>Parcela
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-calendar mr-1"></i>Fecha Siembra
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-ruler-combined mr-1"></i>Área (ha)
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-chart-line mr-1"></i>Estado
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-weight mr-1"></i>Rendimiento
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-toggle-on mr-1"></i>Activo
+                            </th>
+                            <th class="text-center" style="width: 15%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-cogs mr-1"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        {% for c in crop_set %}
+                            <tr class="align-middle" pk="{{ c.id }}" style="border-bottom: 1px solid #e9ecef;">
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.7rem; padding: 0.25em 0.5em;">{{ forloop.counter }}</span>
+                                </td>
+                                <td style="padding: 0.5rem;">
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2">
+                                            <i class="fas fa-seedling" style="color: #28a745;"></i>
+                                        </div>
+                                        <div>
+                                            <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">
+                                                {{ c.crop_name|default:c.crop_type }}
+                                            </span>
+                                            <br>
+                                            <small class="text-muted" style="font-size: 0.75rem;">{{ c.crop_type }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    {% if c.plot %}
+                                        <span class="badge" style="background-color: #d1ecf1; color: #0c5460; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #bee5eb;">{{ c.plot.name }}</span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.85rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    <span style="color: #6c757d;">{{ c.planting_date|date:"d/m/Y" }}</span>
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    <span style="color: #495057; font-weight: 500;">{{ c.planted_area }} ha</span>
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    {% if c.status == 'FINISHED' %}
+                                        <span class="badge" style="background-color: #e2e3e5; color: #383d41; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #d6d8db;">{{ c.get_status_display }}</span>
+                                    {% elif c.status == 'HARVEST' %}
+                                        <span class="badge" style="background-color: #d4edda; color: #155724; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #c3e6cb;">{{ c.get_status_display }}</span>
+                                    {% elif c.status == 'FRUITING' %}
+                                        <span class="badge" style="background-color: #fff3cd; color: #856404; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #ffeaa7;">{{ c.get_status_display }}</span>
+                                    {% elif c.status == 'GROWTH' %}
+                                        <span class="badge" style="background-color: #d1ecf1; color: #0c5460; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #bee5eb;">{{ c.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="badge" style="background-color: #f8f9fa; color: #6c757d; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #dee2e6;">{{ c.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    {% if c.actual_yield %}
+                                        <span style="color: #28a745; font-weight: 500;">{{ c.actual_yield }} kg/ha</span>
+                                    {% elif c.expected_yield %}
+                                        <span style="color: #6c757d;">Esp: {{ c.expected_yield }} kg/ha</span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    {% if c.active %}
+                                        <span class="badge" style="background-color: #d4edda; color: #155724; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #c3e6cb;">
+                                            <i class="fas fa-check-circle mr-1"></i>Sí
+                                        </span>
+                                    {% else %}
+                                        <span class="badge" style="background-color: #e2e3e5; color: #383d41; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #d6d8db;">
+                                            <i class="fas fa-times-circle mr-1"></i>No
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'apps.farm:crop_cycle_cost' %}?crop_id={{ c.id }}" 
+                                           class="btn btn-sm position-relative" 
+                                           title="Ver Insumos y Costos"
+                                           style="background-color: transparent; border: 1px solid #28a745; color: #28a745; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                            <i class="fas fa-dollar-sign" style="font-size: 0.8rem;"></i>
+                                            {% if c.crop_cycle_costs.count > 0 %}
+                                                <span class="badge position-absolute" 
+                                                      style="background-color: #28a745; color: #fff; top: -5px; right: -5px; font-size: 0.65rem; padding: 0.15em 0.35em;">
+                                                    {{ c.crop_cycle_costs.count }}
+                                                </span>
+                                            {% endif %}
+                                        </a>
+                                        <button class="btn btn-sm item-edit" 
+                                                pk="{{ c.id }}" 
+                                                title="Editar Cultivo"
+                                                style="background-color: transparent; border: 1px solid #dee2e6; color: #6c757d; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                            <i class="fas fa-edit" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Total de cultivos: <strong>{{ crop_set.count }}</strong>
+                    </small>
+                </div>
+                <div class="col-md-6 text-right">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-clock mr-1"></i>
+                        Última actualización:
+                        <strong>{{ "now"|date:"d/m/Y H:i" }}</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-seedling fa-5x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">No hay cultivos registrados</h4>
+            <p class="text-muted mb-4">
+                Comienza registrando el primer cultivo
+            </p>
+            <button type="button" 
+                    onclick="showModalView('modal_crop_create')"
+                    class="btn btn-primary btn-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Registrar Primer Cultivo
+            </button>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+.table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+    padding: 0.5rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+    border-radius: 0.25rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.btn-group .btn {
+    margin: 0 2px;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-header h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.table-responsive {
+    border: none;
+}
+</style>
+

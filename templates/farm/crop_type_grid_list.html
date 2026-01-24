@@ -1,0 +1,189 @@
+{% load static %}
+{% if crop_type_set %}
+    <div class="card roboto-condensed-regular">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-list mr-2" style="color: #6c757d;"></i>
+                Lista de Tipos de Cultivo
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="table-crop-type-list" class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <tr>
+                            <th class="text-center" style="width: 5%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-hashtag"></i>
+                            </th>
+                            <th class="text-center" style="width: 30%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-tag mr-1"></i>Nombre
+                            </th>
+                            <th class="text-center" style="width: 45%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-align-left mr-1"></i>Descripción
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-toggle-on mr-1"></i>Estado
+                            </th>
+                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
+                                <i class="fas fa-cogs mr-1"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        {% for ct in crop_type_set %}
+                            <tr class="align-middle" pk="{{ ct.id }}" style="border-bottom: 1px solid #e9ecef;">
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.7rem; padding: 0.25em 0.5em;">{{ forloop.counter }}</span>
+                                </td>
+                                <td style="padding: 0.5rem;">
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2">
+                                            <i class="fas fa-seedling" style="color: #6c757d; font-size: 1rem;"></i>
+                                        </div>
+                                        <div>
+                                            <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">{{ ct.name }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding: 0.5rem;">
+                                    {% if ct.description %}
+                                        <span class="text-truncate d-block" style="max-width: 400px; font-size: 0.85rem;" title="{{ ct.description }}">
+                                            {{ ct.description|truncatewords:20 }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    {% if ct.is_active %}
+                                        <span class="badge" style="background-color: #d1e7dd; color: #0f5132; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #badbcc;">
+                                            <i class="fas fa-check-circle mr-1"></i>Activo
+                                        </span>
+                                    {% else %}
+                                        <span class="badge" style="background-color: #e2e3e5; color: #383d41; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #d6d8db;">
+                                            <i class="fas fa-times-circle mr-1"></i>Inactivo
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center" style="padding: 0.5rem;">
+                                    <button class="btn btn-sm item-edit" 
+                                            pk="{{ ct.id }}" 
+                                            title="Editar Tipo de Cultivo"
+                                            style="background-color: transparent; border: 1px solid #dee2e6; color: #6c757d; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                        <i class="fas fa-edit" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Total de tipos de cultivo: <strong>{{ crop_type_set.count }}</strong>
+                    </small>
+                </div>
+                <div class="col-md-6 text-right">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-clock mr-1"></i>
+                        Última actualización: <strong>{{ "now"|date:"d/m/Y H:i" }}</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-seedling fa-5x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">No hay tipos de cultivo registrados</h4>
+            <p class="text-muted mb-4">
+                Comienza registrando el primer tipo de cultivo
+            </p>
+            <button type="button" 
+                    onclick="showModalView('modal_crop_type_create')"
+                    class="btn btn-primary btn-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Registrar Primer Tipo de Cultivo
+            </button>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+.table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+    padding: 0.5rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+    border-radius: 0.25rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.card-header h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.table-responsive {
+    border: none;
+}
+
+.card-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+</style>
+

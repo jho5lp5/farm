@@ -1,0 +1,172 @@
+{% load static %}
+{% if cost_set %}
+    <div class="card roboto-condensed-regular">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-seedling mr-2" style="color: #0c5460;"></i>
+                Registro de Fertilizantes
+            </h6>
+        </div>
+        <div class="card-body p-3">
+            {% if selected_crop %}
+                <!-- Información General -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="card border-primary mb-2">
+                            <div class="card-body p-2">
+                                <small class="text-muted d-block">ÁREA DE FERTIRRIEGO (HAS.)</small>
+                                <strong class="text-primary">{{ selected_crop.planted_area|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-info mb-2">
+                            <div class="card-body p-2">
+                                <small class="text-muted d-block">CULTIVO</small>
+                                <strong class="text-info">{{ selected_crop.crop_name|default:selected_crop.crop_type|upper }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Tabla de Fertilizantes -->
+            {% if fertilizer_dates and fertilizer_table_data %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm" style="font-size: 0.8rem;">
+                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <tr>
+                            <th style="padding: 8px; text-align: left; font-weight: 600; border-right: 1px solid #dee2e6;">FERTILIZANTES</th>
+                            <th style="padding: 8px; text-align: center; font-weight: 600; border-right: 1px solid #dee2e6;">UND.</th>
+                            {% for date in fertilizer_dates %}
+                                <th style="padding: 8px; text-align: center; font-weight: 600; border-right: 1px solid #dee2e6; min-width: 100px;">
+                                    {{ date|date:"d/m/Y" }}<br>
+                                    <small style="font-weight: normal;">
+                                        {% if date|date:"w" == "0" %}DOMINGO{% elif date|date:"w" == "1" %}LUNES{% elif date|date:"w" == "2" %}MARTES{% elif date|date:"w" == "3" %}MIÉRCOLES{% elif date|date:"w" == "4" %}JUEVES{% elif date|date:"w" == "5" %}VIERNES{% elif date|date:"w" == "6" %}SÁBADO{% endif %}
+                                    </small>
+                                </th>
+                            {% endfor %}
+                            <th style="padding: 8px; text-align: center; font-weight: 600; background-color: #e9ecef;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in fertilizer_table_data %}
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 8px; font-weight: 500; border-right: 1px solid #dee2e6;">
+                                    {{ product.name|upper }}
+                                </td>
+                                <td style="padding: 8px; text-align: center; border-right: 1px solid #dee2e6;">
+                                    {{ product.unit }}
+                                </td>
+                                {% for quantity in product.quantities_list %}
+                                    <td style="padding: 8px; text-align: center; border-right: 1px solid #dee2e6;">
+                                        {% if quantity %}
+                                            {{ quantity|floatformat:2 }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                <td style="padding: 8px; text-align: center; font-weight: bold; background-color: #e9ecef;">
+                                    {{ product.total_quantity|floatformat:2 }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="{{ fertilizer_dates|length|add:3 }}" class="text-center text-muted" style="padding: 20px;">
+                                    No hay fertilizantes registrados
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+                        <tr>
+                            <td colspan="2" class="font-weight-bold text-right" style="padding: 8px; border-right: 1px solid #dee2e6;">
+                                TOTAL ACUMULADO
+                            </td>
+                            {% for date, total in fertilizer_date_totals %}
+                                <td style="padding: 8px; text-align: center; font-weight: bold; border-right: 1px solid #dee2e6;">
+                                    S/ {{ total|floatformat:2 }}
+                                </td>
+                            {% endfor %}
+                            <td style="padding: 8px; text-align: center; font-weight: bold; background-color: #e9ecef;">
+                                S/ {% if total_accumulated %}{{ total_accumulated|floatformat:2 }}{% else %}0.00{% endif %}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    No hay datos de fertilizantes para mostrar en formato de tabla
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Total de registros: <strong>{% if cost_set %}{{ cost_set.count }}{% else %}0{% endif %}</strong>
+                    </small>
+                </div>
+                <div class="col-md-6 text-right">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-clock mr-1"></i>
+                        Última actualización:
+                        <strong>{% if last_update %}{{ last_update|date:"d/m/Y H:i" }}{% else %}N/A{% endif %}</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-seedling fa-5x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">
+                No hay fertilizantes registrados para este cultivo
+            </h4>
+            <p class="text-muted mb-4">
+                Comienza registrando el primer fertilizante para este cultivo
+            </p>
+            <button type="button" 
+                    onclick="showModalCreate()"
+                    class="btn btn-primary btn-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Registrar Primer Fertilizante
+            </button>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+.table {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+}
+
+.table tfoot {
+    font-size: 0.85rem;
+}
+
+.table tfoot td {
+    border-top: 2px solid #dee2e6;
+    border-bottom: none;
+}
+</style>

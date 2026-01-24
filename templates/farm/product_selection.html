@@ -1,0 +1,102 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header {% if transaction_type == 'entry' %}bg-success{% else %}bg-danger{% endif %} text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-search mr-2"></i>
+                {% if transaction_type == 'entry' %}
+                    Seleccionar Producto - Registrar Entrada
+                {% else %}
+                    Seleccionar Producto - Registrar Salida
+                {% endif %}
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="modal-body p-4">
+            <div class="card border-{% if transaction_type == 'entry' %}success{% else %}danger{% endif %}">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 text-{% if transaction_type == 'entry' %}success{% else %}danger{% endif %}">
+                        <i class="fas fa-box mr-2"></i>
+                        Buscar y Seleccionar Producto
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label font-weight-bold">
+                            <i class="fas fa-tag mr-1"></i>
+                            Producto <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-control form-control-lg" 
+                                id="id-product-selection"
+                                name="product_id" 
+                                required>
+                            <option value="">Seleccione un producto...</option>
+                            {% for product in product_set %}
+                                <option value="{{ product.id }}">
+                                    {{ product.name }} 
+                                    {% if product.brand %}({{ product.brand }}){% endif %}
+                                    - {{ product.get_unit_display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">
+                            Seleccione el producto para {% if transaction_type == 'entry' %}registrar la entrada{% else %}registrar la salida{% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class="fas fa-times mr-1"></i>
+                Cancelar
+            </button>
+            <button type="button" 
+                    class="btn {% if transaction_type == 'entry' %}btn-success{% else %}btn-danger{% endif %}"
+                    onclick="proceedToForm('{{ transaction_type }}')">
+                <i class="fas fa-arrow-right mr-1"></i>
+                Continuar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Try to enable Select2 if available
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('#id-product-selection').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Buscar producto...',
+            allowClear: true,
+            width: '100%'
+        });
+    }
+    
+    // Focus on select
+    $('#id-product-selection').focus();
+});
+
+function proceedToForm(type) {
+    const productId = $('#id-product-selection').val();
+    
+    if (!productId) {
+        toastr.error('Debe seleccionar un producto');
+        $('#id-product-selection').addClass('is-invalid');
+        $('#id-product-selection').focus();
+        return;
+    }
+    
+    $('#id-product-selection').removeClass('is-invalid');
+    
+    if (type === 'entry') {
+        showEntryForm(productId);
+    } else {
+        showExitForm(productId);
+    }
+}
+</script>
+

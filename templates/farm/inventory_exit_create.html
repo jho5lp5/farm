@@ -1,0 +1,236 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h5 class="modal-title" style="color: #495057; font-weight: 600; font-size: 0.95rem;">
+                <i class="fas fa-arrow-up mr-2" style="color: #dc3545;"></i>
+                Registrar Salida de Inventario
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #6c757d;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-inventory-exit" action="{% url 'apps.farm:create_inventory_exit' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            
+            <div class="modal-body p-3" style="font-size: 0.85rem;">
+                <!-- Información del Producto -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #dee2e6;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-box mr-2" style="color: #6c757d;"></i>
+                            Producto Seleccionado
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fas fa-box" style="color: #6c757d; font-size: 1.5rem;"></i>
+                            </div>
+                            <div class="col-md-10">
+                                <h6 class="mb-1 font-weight-bold" style="color: #495057; font-size: 0.9rem;">{{ product.name }}</h6>
+                                {% if product.brand %}
+                                    <p class="mb-1 text-muted" style="font-size: 0.8rem;">
+                                        <i class="fas fa-trademark mr-1"></i>
+                                        <strong>Marca:</strong> {{ product.brand }}
+                                    </p>
+                                {% endif %}
+                                <p class="mb-0" style="font-size: 0.8rem;">
+                                    <i class="fas fa-ruler mr-1"></i>
+                                    <strong>Unidad:</strong> {{ product.get_unit_display }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos de Salida -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #f8d7da;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #f8d7da;">
+                        <h6 class="mb-0" style="color: #dc3545; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-arrow-up mr-2"></i>
+                            Datos de Salida
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                        <i class="fas fa-calendar-minus mr-1"></i>
+                                        Fecha de Salida <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-exit-date"
+                                           name="exit_date"
+                                           style="font-size: 0.85rem;"
+                                           required>
+                                    <small class="form-text text-muted" style="font-size: 0.75rem;">Fecha en que salió el producto del inventario</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                        <i class="fas fa-flask mr-1"></i>
+                                        Cantidad de Salida (Litros) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-exit-quantity" 
+                                           name="exit_quantity"
+                                           step="0.01"
+                                           min="0.01"
+                                           placeholder="0.00"
+                                           style="font-size: 0.85rem;"
+                                           required>
+                                    <small class="form-text text-muted" style="font-size: 0.75rem;">Cantidad en litros que salió del inventario</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                        <i class="fas fa-seedling mr-1"></i>
+                                        Razón (Sembrío) <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-crop-id"
+                                            name="crop_id"
+                                            style="font-size: 0.85rem;"
+                                            required>
+                                        <option value="">Seleccione un sembrío...</option>
+                                        {% for crop in crop_set %}
+                                            <option value="{{ crop.id }}">
+                                                {{ crop.crop_name|default:crop.crop_type }} - {{ crop.plot.name|default:"Sin parcela" }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted" style="font-size: 0.75rem;">Seleccione el sembrío donde se utilizó el producto</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #dee2e6;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #6c757d; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Observaciones (Opcional)
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="form-group mb-0">
+                            <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                <i class="fas fa-comment mr-1"></i>
+                                Observaciones
+                            </label>
+                            <textarea class="form-control form-control-sm"
+                                      id="id-observations" 
+                                      name="observations"
+                                      rows="2"
+                                      style="font-size: 0.85rem;"
+                                      placeholder="Ingrese observaciones adicionales si es necesario"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6; padding: 0.75rem;">
+                <button type="button" class="btn btn-sm" data-dismiss="modal" style="background-color: #6c757d; color: #fff; border: none; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-inventory-exit" type="submit" class="btn btn-sm" style="background-color: #dc3545; color: #fff; border: none; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Salida
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    $('#id-exit-date').val(today);
+    
+    // Try to enable Select2 for crop if available
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('#id-crop-id').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Buscar sembrío...',
+            allowClear: true,
+            width: '100%'
+        });
+    }
+    
+    // Form validation
+    $('#form-inventory-exit').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        if (!$('#id-exit-date').val()) {
+            toastr.error('La fecha de salida es requerida');
+            $('#id-exit-date').addClass('is-invalid');
+            return;
+        }
+        
+        if (!$('#id-exit-quantity').val() || parseFloat($('#id-exit-quantity').val()) <= 0) {
+            toastr.error('La cantidad debe ser mayor a cero');
+            $('#id-exit-quantity').addClass('is-invalid');
+            return;
+        }
+        
+        if (!$('#id-crop-id').val()) {
+            toastr.error('El sembrío (razón) es requerido');
+            $('#id-crop-id').addClass('is-invalid');
+            return;
+        }
+        
+        // Show loading
+        $('#save-inventory-exit').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Registrando...');
+        
+        let data = new FormData($('#form-inventory-exit').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        const productId = $('input[name="product_id"]').val();
+                        window.location.href = '/farm/inventory_transaction/?product_id=' + productId;
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar la salida');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-inventory-exit').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Salida');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

@@ -1,0 +1,304 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}
+    System | Registros de Entradas y Salidas
+{% endblock title %}
+
+{% block body %}
+    <!-- Selector de Producto -->
+    <div class="card roboto-condensed-regular mb-3 shadow-sm">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-search mr-2" style="color: #6c757d;"></i>
+                Seleccionar Producto
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-end">
+                <div class="col-md-8">
+                    <div class="form-group mb-0">
+                        <label class="form-label font-weight-bold">
+                            <i class="fas fa-box mr-1"></i>
+                            Producto <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-control form-control-lg" 
+                                id="id-product-selector"
+                                name="product_id">
+                            <option value="">Seleccione un producto para ver su kardex...</option>
+                            {% for product in product_set %}
+                                <option value="{{ product.id }}" {% if product_id == product.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ product.name }} 
+                                    {% if product.brand %}({{ product.brand }}){% endif %}
+                                    - {{ product.get_unit_display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 text-right">
+                    <button type="button" 
+                            class="btn btn-sm"
+                            onclick="loadProductTransactions()"
+                            style="background-color: #007bff; color: #fff; border: 1px solid #007bff; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem;">
+                        <i class="fas fa-search mr-1"></i>
+                        Buscar Kardex
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Producto y Botones -->
+    {% if selected_product %}
+    <div class="card roboto-condensed-regular mb-3 shadow-sm" id="product-info-card">
+        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                        <i class="fas fa-box mr-2" style="color: #6c757d;"></i>
+                        Producto: <strong>{{ selected_product.name }}</strong>
+                        {% if selected_product.brand %}
+                            <span class="ml-2" style="color: #6c757d;">({{ selected_product.brand }})</span>
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="col-md-4 text-right">
+                    <div class="btn-group" role="group">
+                        <button type="button" 
+                                onclick="showEntryForm({{ selected_product.id }})"
+                                class="btn btn-sm"
+                                style="background-color: #28a745; color: #fff; border: 1px solid #28a745; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem;">
+                            <i class="fas fa-arrow-down"></i> Registrar Entrada
+                        </button>
+                        <button type="button" 
+                                onclick="showExitForm({{ selected_product.id }})"
+                                class="btn btn-sm"
+                                style="background-color: #dc3545; color: #fff; border: 1px solid #dc3545; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem;">
+                            <i class="fas fa-arrow-up"></i> Registrar Salida
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Transacciones -->
+    <div class="card roboto-condensed-regular">
+        <div class="card-body p-2">
+            <div id="inventory-transaction-grid-list"
+                 class="table-responsive small">
+                {% if transaction_set %}
+                    {% include "farm/inventory_transaction_grid_list.html" %}
+                {% else %}
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-clipboard-list fa-5x text-muted"></i>
+                            </div>
+                            <h4 class="text-muted mb-3">Seleccione un producto</h4>
+                            <p class="text-muted mb-0">
+                                Elija un producto del selector superior para ver su kardex de entradas y salidas
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-inventory-entry" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-inventory-exit" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-inventory-transaction-update" tabindex="-1" role="dialog"
+         aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+
+{% endblock body %}
+
+{% block extrajs %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Try to enable Select2 if available
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('#id-product-selector').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Seleccione un producto...',
+            allowClear: true,
+            width: '100%'
+        });
+    }
+    
+    // Enter key to load transactions
+    $('#id-product-selector').on('change', function() {
+        if ($(this).val()) {
+            loadProductTransactions();
+        }
+    });
+    
+    // Load transactions if product is already selected
+    {% if selected_product %}
+        loadProductTransactions();
+    {% endif %}
+});
+
+function loadProductTransactions() {
+    const productId = $('#id-product-selector').val();
+    
+    if (!productId) {
+        toastr.warning('Debe seleccionar un producto');
+        return;
+    }
+    
+    // Show loading
+    $('#inventory-transaction-grid-list').html(
+        '<div class="text-center py-5">' +
+        '<i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>' +
+        '<p class="text-muted">Cargando transacciones...</p>' +
+        '</div>'
+    );
+    
+    // Load transactions via AJAX
+    $.ajax({
+        url: '/farm/inventory_transaction_grid/',
+        type: 'GET',
+        data: {'product_id': productId},
+        success: function (response) {
+            $('#inventory-transaction-grid-list').html(response);
+            
+            // Load product info and buttons
+            loadProductInfo(productId);
+        },
+        error: function (xhr, status, error) {
+            toastr.error('Error al cargar las transacciones', '¡Error!');
+            $('#inventory-transaction-grid-list').html(
+                '<div class="card"><div class="card-body text-center py-5">' +
+                '<i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>' +
+                '<p class="text-muted">Error al cargar las transacciones</p>' +
+                '</div></div>'
+            );
+            console.error('Error:', error);
+        }
+    });
+}
+
+function loadProductInfo(productId) {
+    // Update URL without reload
+    const newUrl = '/farm/inventory_transaction/?product_id=' + productId;
+    window.history.pushState({path: newUrl}, '', newUrl);
+    
+    // Get product name from selector
+    const selectedOption = $('#id-product-selector option:selected');
+    const productName = selectedOption.text().split(' - ')[0];
+    const productBrand = selectedOption.text().includes('(') ? 
+        selectedOption.text().match(/\(([^)]+)\)/)?.[1] : '';
+    
+    // Build product info card HTML
+    let productInfoHtml = '<div class="card roboto-condensed-regular mb-3 shadow-sm" id="product-info-card">' +
+        '<div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">' +
+        '<div class="row align-items-center">' +
+        '<div class="col-md-8">' +
+        '<h6 class="mb-0" style="color: #495057; font-weight: 600;">' +
+        '<i class="fas fa-box mr-2" style="color: #6c757d;"></i>' +
+        'Producto: <strong>' + productName + '</strong>';
+    
+    if (productBrand) {
+        productInfoHtml += ' <span class="ml-2">(' + productBrand + ')</span>';
+    }
+    
+    productInfoHtml += '</h6>' +
+        '</div>' +
+        '<div class="col-md-4 text-right">' +
+        '<div class="btn-group" role="group">' +
+        '<button type="button" onclick="showEntryForm(' + productId + ')" class="btn btn-sm" style="background-color: #28a745; color: #fff; border: 1px solid #28a745; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem;">' +
+        '<i class="fas fa-arrow-down"></i> Registrar Entrada' +
+        '</button>' +
+        '<button type="button" onclick="showExitForm(' + productId + ')" class="btn btn-sm" style="background-color: #dc3545; color: #fff; border: 1px solid #dc3545; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem;">' +
+        '<i class="fas fa-arrow-up"></i> Registrar Salida' +
+        '</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    
+    // Remove existing card if any
+    $('#product-info-card').remove();
+    
+    // Insert before transactions card (last card)
+    $('.card:last').before(productInfoHtml);
+}
+
+function showEntryForm(productId) {
+    $('#modal-inventory-entry').empty()
+    $.ajax({
+        url: '/farm/modal_inventory_entry_create/',
+        dataType: 'json',
+        type: 'GET',
+        data: {'product_id': productId},
+        success: function (response) {
+            if (response.success === false) {
+                toastr.error(response.message);
+                return;
+            }
+            $('#modal-inventory-entry').html(response.form);
+            $('#modal-inventory-entry').modal('show');
+        },
+        error: function (xhr, status, error) {
+            let message = 'Error al cargar el formulario de entrada';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            toastr.error(message, '¡Error!');
+            console.error('Error:', error);
+        }
+    });
+}
+
+function showExitForm(productId) {
+    $('#modal-inventory-exit').empty()
+    $.ajax({
+        url: '/farm/modal_inventory_exit_create/',
+        dataType: 'json',
+        type: 'GET',
+        data: {'product_id': productId},
+        success: function (response) {
+            if (response.success === false) {
+                toastr.error(response.message);
+                return;
+            }
+            $('#modal-inventory-exit').html(response.form);
+            $('#modal-inventory-exit').modal('show');
+        },
+        error: function (xhr, status, error) {
+            let message = 'Error al cargar el formulario de salida';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            toastr.error(message, '¡Error!');
+            console.error('Error:', error);
+        }
+    });
+}
+    $(document).on('click', '.item-edit', function () {
+        let _pk = $(this).attr('pk');
+        $('#modal-inventory-transaction-update').empty()
+        $.ajax({
+            url: '/farm/modal_inventory_transaction_update/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': _pk},
+            success: function (response) {
+                $('#modal-inventory-transaction-update').html(response.form);
+                $('#modal-inventory-transaction-update').modal('show');
+            },
+            fail: function (response) {
+                toastr.error('Error en la petición', '¡Mensaje!');
+            }
+        });
+    });
+</script>
+{% endblock extrajs %}
+

@@ -1,0 +1,286 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-edit mr-2"></i>
+                Editar Transacción de Inventario
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-inventory-transaction-update" action="{% url 'apps.farm:update_inventory_transaction' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="transaction_id" value="{{ transaction_obj.id }}">
+            
+            <div class="modal-body p-4">
+                <!-- Información del Producto -->
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-primary">
+                            <i class="fas fa-box mr-2"></i>
+                            Información del Producto
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Producto <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-product-id"
+                                            name="product_id" 
+                                            required>
+                                        <option value="">Seleccione un producto...</option>
+                                        {% for product in product_set %}
+                                            <option value="{{ product.id }}" {% if transaction_obj.product.id == product.id %}selected{% endif %}>
+                                                {{ product.name }} ({{ product.get_unit_display }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entrada de Inventario -->
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-success">
+                            <i class="fas fa-arrow-down mr-2"></i>
+                            Entrada de Inventario
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar-plus mr-1"></i>
+                                        Fecha de Ingreso
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-entry-date"
+                                           name="entry_date"
+                                           value="{% if transaction_obj.entry_date %}{{ transaction_obj.entry_date|date:'Y-m-d' }}{% endif %}">
+                                    <small class="form-text text-muted">Fecha en que ingresó el producto</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-flask mr-1"></i>
+                                        Cantidad de Entrada (Litros)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-entry-quantity" 
+                                           name="entry_quantity"
+                                           step="0.01"
+                                           min="0"
+                                           value="{% if transaction_obj.entry_quantity %}{{ transaction_obj.entry_quantity }}{% endif %}"
+                                           placeholder="0.00">
+                                    <small class="form-text text-muted">Cantidad en litros que ingresó</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salida de Inventario -->
+                <div class="card border-danger mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-danger">
+                            <i class="fas fa-arrow-up mr-2"></i>
+                            Salida de Inventario
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-calendar-minus mr-1"></i>
+                                        Fecha de Salida
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-exit-date"
+                                           name="exit_date"
+                                           value="{% if transaction_obj.exit_date %}{{ transaction_obj.exit_date|date:'Y-m-d' }}{% endif %}">
+                                    <small class="form-text text-muted">Fecha en que salió el producto</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-seedling mr-1"></i>
+                                        Razón (Sembrío)
+                                    </label>
+                                    <select class="form-control form-control-sm" 
+                                            id="id-crop-id"
+                                            name="crop_id">
+                                        <option value="">Seleccione un sembrío...</option>
+                                        {% for crop in crop_set %}
+                                            <option value="{{ crop.id }}" {% if transaction_obj.crop and transaction_obj.crop.id == crop.id %}selected{% endif %}>
+                                                {{ crop.crop_name|default:crop.crop_type }} - {{ crop.hectare.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">En qué sembrío se utilizó</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-flask mr-1"></i>
+                                        Cantidad de Salida (Litros)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-exit-quantity" 
+                                           name="exit_quantity"
+                                           step="0.01"
+                                           min="0"
+                                           value="{% if transaction_obj.exit_quantity %}{{ transaction_obj.exit_quantity }}{% endif %}"
+                                           placeholder="0.00">
+                                    <small class="form-text text-muted">Cantidad en litros que salió</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="card border-secondary mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-secondary">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Observaciones
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-comment mr-1"></i>
+                                        Observaciones
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-observations" 
+                                              name="observations"
+                                              rows="3"
+                                              placeholder="Ingrese observaciones adicionales si es necesario">{% if transaction_obj.observations %}{{ transaction_obj.observations }}{% endif %}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="update-inventory-transaction" type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i>
+                    Actualizar Transacción
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Form validation
+    $('#form-inventory-transaction-update').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate product is selected
+        if (!$('#id-product-id').val()) {
+            toastr.error('Debe seleccionar un producto');
+            $('#id-product-id').addClass('is-invalid');
+            return;
+        }
+        
+        // Validate at least one quantity is provided
+        const entryQty = $('#id-entry-quantity').val();
+        const exitQty = $('#id-exit-quantity').val();
+        
+        if (!entryQty && !exitQty) {
+            toastr.error('Debe ingresar al menos una cantidad (entrada o salida)');
+            return;
+        }
+        
+        // If exit quantity is provided, validate exit date and crop
+        if (exitQty) {
+            if (!$('#id-exit-date').val()) {
+                toastr.error('La fecha de salida es requerida cuando se ingresa cantidad de salida');
+                $('#id-exit-date').addClass('is-invalid');
+                return;
+            }
+            if (!$('#id-crop-id').val()) {
+                toastr.error('El sembrío (razón) es requerido cuando se ingresa cantidad de salida');
+                $('#id-crop-id').addClass('is-invalid');
+                return;
+            }
+        }
+        
+        // If entry quantity is provided, validate entry date
+        if (entryQty) {
+            if (!$('#id-entry-date').val()) {
+                toastr.error('La fecha de ingreso es requerida cuando se ingresa cantidad de entrada');
+                $('#id-entry-date').addClass('is-invalid');
+                return;
+            }
+        }
+        
+        // Show loading
+        $('#update-inventory-transaction').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Actualizando...');
+        
+        let data = new FormData($('#form-inventory-transaction-update').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al actualizar la transacción');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#update-inventory-transaction').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Actualizar Transacción');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

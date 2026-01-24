@@ -1,0 +1,208 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h5 class="modal-title" style="color: #495057; font-weight: 600;">
+                <i class="fas fa-seedling mr-2" style="color: #6c757d;"></i>
+                Registro de Nuevo Tipo de Cultivo
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #6c757d;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-crop-type" action="{% url 'apps.farm:create_crop_type' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="modal-body p-4" style="background-color: #ffffff;">
+                <!-- Información Básica -->
+                <div class="card mb-4" style="border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600;">
+                            <i class="fas fa-info-circle mr-2" style="color: #6c757d;"></i>
+                            Información Básica
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Nombre del Tipo de Cultivo
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           id="id-name"
+                                           maxlength="100"
+                                           name="name" 
+                                           placeholder="Ingrese el nombre del tipo de cultivo"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-align-left mr-1"></i>
+                                        Descripción
+                                    </label>
+                                    <textarea class="form-control form-control-sm"
+                                              id="id-description" 
+                                              name="description"
+                                              rows="4"
+                                              placeholder="Ingrese la descripción del tipo de cultivo"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="id-is-active"
+                                               name="is_active" 
+                                               value="true"
+                                               checked>
+                                        <label class="custom-control-label font-weight-bold" for="id-is-active">
+                                            <i class="fas fa-toggle-on mr-1"></i>
+                                            Tipo de Cultivo Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                <button type="button" class="btn btn-sm" data-dismiss="modal" style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; padding: 0.375rem 0.75rem; border-radius: 0.25rem;">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-crop-type" type="submit" class="btn btn-sm" style="background-color: #007bff; color: #fff; border: 1px solid #007bff; padding: 0.375rem 0.75rem; border-radius: 0.25rem;">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Tipo de Cultivo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Form validation
+    $('#form-crop-type').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        let isValid = true;
+        $(this).find('[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            toastr.error('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        // Show loading
+        $('#save-crop-type').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Guardando...');
+        
+        let data = new FormData($('#form-crop-type').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar el tipo de cultivo');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-crop-type').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Tipo de Cultivo');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea, select').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+
+<style>
+.form-label {
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-control-sm {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    color: #495057;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-control-sm:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: 0;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: none;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.custom-control-label {
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+    font-size: 0.75rem;
+}
+</style>
+

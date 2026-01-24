@@ -1,0 +1,197 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+            <h5 class="modal-title" style="color: #495057; font-weight: 600; font-size: 0.95rem;">
+                <i class="fas fa-arrow-down mr-2" style="color: #28a745;"></i>
+                Registrar Entrada de Inventario
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #6c757d;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-inventory-entry" action="{% url 'apps.farm:create_inventory_entry' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            
+            <div class="modal-body p-3" style="font-size: 0.85rem;">
+                <!-- Información del Producto -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #dee2e6;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #495057; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-box mr-2" style="color: #6c757d;"></i>
+                            Producto Seleccionado
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fas fa-box" style="color: #6c757d; font-size: 1.5rem;"></i>
+                            </div>
+                            <div class="col-md-10">
+                                <h6 class="mb-1 font-weight-bold" style="color: #495057; font-size: 0.9rem;">{{ product.name }}</h6>
+                                {% if product.brand %}
+                                    <p class="mb-1 text-muted" style="font-size: 0.8rem;">
+                                        <i class="fas fa-trademark mr-1"></i>
+                                        <strong>Marca:</strong> {{ product.brand }}
+                                    </p>
+                                {% endif %}
+                                <p class="mb-0" style="font-size: 0.8rem;">
+                                    <i class="fas fa-ruler mr-1"></i>
+                                    <strong>Unidad:</strong> {{ product.get_unit_display }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos de Entrada -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #d4edda;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #d4edda;">
+                        <h6 class="mb-0" style="color: #28a745; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-arrow-down mr-2"></i>
+                            Datos de Entrada
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                        <i class="fas fa-calendar-plus mr-1"></i>
+                                        Fecha de Ingreso <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-sm" 
+                                           id="id-entry-date"
+                                           name="entry_date"
+                                           style="font-size: 0.85rem;"
+                                           required>
+                                    <small class="form-text text-muted" style="font-size: 0.75rem;">Fecha en que ingresó el producto al inventario</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                        <i class="fas fa-flask mr-1"></i>
+                                        Cantidad de Entrada (Litros) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="id-entry-quantity" 
+                                           name="entry_quantity"
+                                           step="0.01"
+                                           min="0.01"
+                                           placeholder="0.00"
+                                           style="font-size: 0.85rem;"
+                                           required>
+                                    <small class="form-text text-muted" style="font-size: 0.75rem;">Cantidad en litros que ingresó al inventario</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="card mb-3 shadow-sm" style="border: 1px solid #dee2e6;">
+                    <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                        <h6 class="mb-0" style="color: #6c757d; font-weight: 600; font-size: 0.85rem;">
+                            <i class="fas fa-sticky-note mr-2"></i>
+                            Observaciones (Opcional)
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="form-group mb-0">
+                            <label class="form-label font-weight-bold" style="font-size: 0.8rem; color: #495057;">
+                                <i class="fas fa-comment mr-1"></i>
+                                Observaciones
+                            </label>
+                            <textarea class="form-control form-control-sm"
+                                      id="id-observations" 
+                                      name="observations"
+                                      rows="2"
+                                      style="font-size: 0.85rem;"
+                                      placeholder="Ingrese observaciones adicionales si es necesario"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6; padding: 0.75rem;">
+                <button type="button" class="btn btn-sm" data-dismiss="modal" style="background-color: #6c757d; color: #fff; border: none; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </button>
+                <button id="save-inventory-entry" type="submit" class="btn btn-sm" style="background-color: #28a745; color: #fff; border: none; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-save mr-1"></i>
+                    Registrar Entrada
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    $('#id-entry-date').val(today);
+    
+    // Form validation
+    $('#form-inventory-entry').submit(function (event) {
+        event.preventDefault();
+        
+        // Validate required fields
+        if (!$('#id-entry-date').val()) {
+            toastr.error('La fecha de ingreso es requerida');
+            $('#id-entry-date').addClass('is-invalid');
+            return;
+        }
+        
+        if (!$('#id-entry-quantity').val() || parseFloat($('#id-entry-quantity').val()) <= 0) {
+            toastr.error('La cantidad debe ser mayor a cero');
+            $('#id-entry-quantity').addClass('is-invalid');
+            return;
+        }
+        
+        // Show loading
+        $('#save-inventory-entry').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Registrando...');
+        
+        let data = new FormData($('#form-inventory-entry').get(0));
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(() => {
+                        const productId = $('input[name="product_id"]').val();
+                        window.location.href = '/farm/inventory_transaction/?product_id=' + productId;
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Ocurrió un problema al registrar la entrada');
+                console.error('Error:', error);
+            },
+            complete: function() {
+                $('#save-inventory-entry').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Registrar Entrada');
+            }
+        });
+    });
+
+    // Remove error class when user starts typing
+    $('input, textarea').on('input change', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+

@@ -1,0 +1,118 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content roboto-condensed-regular">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+            <h5 class="modal-title text-white">
+                <i class="fas fa-concierge-bell mr-2"></i>
+                Gestionar Tipos de Servicio
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="modal-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Lista de Tipos de Servicio</h6>
+                <button type="button" onclick="showServiceTypeCreate()" class="btn btn-sm btn-info">
+                    <i class="fas fa-plus mr-1"></i> Nuevo Tipo de Servicio
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 30%;">Nombre</th>
+                            <th style="width: 45%;">Descripción</th>
+                            <th style="width: 10%;">Estado</th>
+                            <th style="width: 10%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="service-type-list">
+                        {% for st in service_type_set %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ st.name }}</strong></td>
+                            <td><small class="text-muted">{{ st.description|default:'-'|truncatewords:10 }}</small></td>
+                            <td>
+                                {% if st.active %}
+                                    <span class="badge badge-success badge-pill">Activo</span>
+                                {% else %}
+                                    <span class="badge badge-secondary badge-pill">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="showModalServiceTypeUpdate({{ st.id }})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="fas fa-concierge-bell fa-3x mb-3 d-block"></i>
+                                No hay tipos de servicio registrados
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class="fas fa-times mr-1"></i>
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+function showServiceTypeCreate() {
+    $.ajax({
+        url: '/farm/modal_service_type_create/?action=create',
+        dataType: 'json',
+        type: 'GET',
+        success: function (response) {
+            $('#modal-service-type').html(response.form);
+        },
+        error: function (response) {
+            toastr.error('Error al cargar el formulario');
+        }
+    });
+}
+
+function showModalServiceTypeUpdate(id) {
+    $.ajax({
+        url: '/farm/modal_service_type_update/',
+        dataType: 'json',
+        type: 'GET',
+        data: {'pk': id},
+        success: function (response) {
+            $('#modal-service-type').html(response.form);
+        },
+        error: function (response) {
+            toastr.error('Error al cargar el formulario');
+        }
+    });
+}
+
+// When service type is saved, reload the management modal
+$(document).on('serviceTypeSaved', function() {
+    $.ajax({
+        url: '/farm/modal_service_type_create/',
+        dataType: 'json',
+        type: 'GET',
+        success: function (response) {
+            $('#modal-service-type').html(response.form);
+        },
+        error: function (response) {
+            toastr.error('Error al recargar la lista');
+        }
+    });
+});
+</script>
+
