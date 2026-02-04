@@ -1,20 +1,17 @@
 {% load static %}
 <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-    <div class="modal-content">
-        <div id="modal-loader-edit" class="overlay" style="display: none">
+    <div class="modal-content roboto-condensed-regular hrm-modal hrm-modal-employee">
+        <div id="modal-loader-edit" class="hrm-modal-overlay" style="display: none">
             <div class="d-flex justify-content-center align-items-center h-100">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Cargando...</span>
-                </div>
+                <div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>
             </div>
         </div>
-        
-        <div class="modal-header bg-gradient-success text-white">
-            <h5 class="modal-title mb-0">
-                <i class="fas fa-user-edit mr-2"></i>
+        <div class="hrm-modal-header">
+            <h5 class="hrm-modal-title">
+                <i class="fas fa-user-edit"></i>
                 Editar Colaborador
             </h5>
-            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="hrm-modal-close" data-dismiss="modal" aria-label="Cerrar">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -22,191 +19,112 @@
         <form id="form-edit-user" action="{% url 'apps.hrm:update_user' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user_obj.id }}">
-            
-            <div class="modal-body p-4">
+            <div class="hrm-modal-body modal-body p-4">
                 <div class="row">
-                    <!-- Columna izquierda - Información personal -->
                     <div class="col-lg-8">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-light border-0">
-                                <h6 class="mb-0 text-white">
-                                    <i class="fas fa-user mr-2"></i>Información Personal
-                                </h6>
-                            </div>
-                            <div class="card-body">
+                        <div class="hrm-form-section">
+                            <div class="hrm-form-section-header"><i class="fas fa-user"></i> Información Personal</div>
+                            <div class="hrm-form-section-body">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Nombres *</label>
-                                        <input type="text" class="form-control" 
-                                                       value="{{ user_obj.first_name }}"
-                                                       name="first-name" required>
-                                            </div>
+                                        <label class="form-label font-weight-bold">Nombres *</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.first_name }}" name="first-name" required>
+                                    </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Apellidos *</label>
-                                        <input type="text" class="form-control" 
-                                                       value="{{ user_obj.last_name }}"
-                                                       name="last-name" required>
-                                            </div>
-                                        </div>
+                                        <label class="form-label font-weight-bold">Apellidos *</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.last_name }}" name="last-name" required>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Documento *</label>
-                                        <input type="text" class="form-control" 
-                                               value="{{ user_obj.document }}"
-                                               name="document" required>
-                                                    </div>
+                                        <label class="form-label font-weight-bold">Documento *</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.document }}" name="document" required>
+                                    </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Fecha de Nacimiento</label>
-                                        <input type="date" class="form-control" 
-                                               name="birth-date" 
-                                                           value="{{ user_obj.birth_date|date:'Y-m-d' }}">
-                                                </div>
-                                            </div>
+                                        <label class="form-label font-weight-bold">Fecha de Nacimiento</label>
+                                        <input type="date" class="form-control hrm-input" name="birth-date" value="{{ user_obj.birth_date|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Género</label>
-                                        <select class="form-control" name="gender">
-                                                    {% for g in gender_set %}
-                                                        {% if user_obj.gender == g.0 %}
-                                                            <option selected value="{{ g.0 }}">{{ g.1 }}</option>
-                                                        {% else %}
-                                                            <option value="{{ g.0 }}">{{ g.1 }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
+                                        <label class="form-label font-weight-bold">Género</label>
+                                        <select class="form-control hrm-input" name="gender">
+                                            {% for g in gender_set %}
+                                                <option value="{{ g.0 }}" {% if user_obj.gender == g.0 %}selected{% endif %}>{{ g.1 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Nacionalidad</label>
-                                        <select class="form-control" name="nationality">
-                                                    {% for n in nationality_set %}
-                                                        {% if user_obj.nationality == n.0 %}
-                                                            <option selected value="{{ n.0 }}">{{ n.1 }}</option>
-                                                        {% else %}
-                                                            <option value="{{ n.0 }}">{{ n.1 }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                            </div>
-                                
+                                        <label class="form-label font-weight-bold">Nacionalidad</label>
+                                        <select class="form-control hrm-input" name="nationality">
+                                            {% for n in nationality_set %}
+                                                <option value="{{ n.0 }}" {% if user_obj.nationality == n.0 %}selected{% endif %}>{{ n.1 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Estado Civil</label>
-                                        <select class="form-control" name="marital-status">
+                                        <label class="form-label font-weight-bold">Estado Civil</label>
+                                        <select class="form-control hrm-input" name="marital-status">
                                             {% for m in marital_status_set %}
-                                                {% if user_obj.marital_status == m.0 %}
-                                                    <option selected value="{{ m.0 }}">{{ m.1 }}</option>
-                                                {% else %}
-                                                    <option value="{{ m.0 }}">{{ m.1 }}</option>
-                                                {% endif %}
+                                                <option value="{{ m.0 }}" {% if user_obj.marital_status == m.0 %}selected{% endif %}>{{ m.1 }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Educación</label>
-                                        <select class="form-control" name="education">
+                                        <label class="form-label font-weight-bold">Educación</label>
+                                        <select class="form-control hrm-input" name="education">
                                             {% for e in education_set %}
-                                                {% if user_obj.education == e.0 %}
-                                                    <option selected value="{{ e.0 }}">{{ e.1 }}</option>
-                                                {% else %}
-                                                    <option value="{{ e.0 }}">{{ e.1 }}</option>
-                                                {% endif %}
+                                                <option value="{{ e.0 }}" {% if user_obj.education == e.0 %}selected{% endif %}>{{ e.1 }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
-
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Dirección</label>
+                                    <input type="text" class="form-control hrm-input" value="{{ user_obj.address|default:'' }}" name="address" placeholder="Ingrese dirección completa">
+                                </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Tipo de Empleado *</label>
-                                        <select class="form-control" name="type-employee" required>
-                                            {% for t in type_employee_set %}
-                                                {% if user_obj.type_employee == t.0 %}
-                                                    <option selected value="{{ t.0 }}">{{ t.1 }}</option>
-                                                {% else %}
-                                                    <option value="{{ t.0 }}">{{ t.1 }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Dirección</label>
-                                    <input type="text" class="form-control" 
-                                           value="{{ user_obj.address|default:'' }}"
-                                           name="address" placeholder="Ingrese dirección completa">
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Teléfono</label>
-                                        <input type="text" class="form-control" 
-                                               value="{{ user_obj.phone|default:'' }}"
-                                               name="phone" placeholder="Número telefónico">
+                                        <label class="form-label font-weight-bold">Teléfono</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.phone|default:'' }}" name="phone" placeholder="Número telefónico">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Celular</label>
-                                        <input type="text" class="form-control" 
-                                               value="{{ user_obj.cellphone|default:'' }}"
-                                               name="cellphone" placeholder="Número celular">
+                                        <label class="form-label font-weight-bold">Celular</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.cellphone|default:'' }}" name="cellphone" placeholder="Número celular">
                                     </div>
                                 </div>
-                                
                                 <div class="mb-3">
-                                    <label class="form-label text-muted small">Referencia</label>
-                                    <input type="text" class="form-control" 
-                                           value="{{ user_obj.reference|default:'' }}"
-                                           name="reference" placeholder="Punto de referencia">
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Observaciones</label>
-                                    <textarea class="form-control" 
-                                              name="observations" rows="3" 
-                                              placeholder="Observaciones adicionales">{{ user_obj.observations|default:'' }}</textarea>
+                                    <label class="form-label font-weight-bold">Observaciones</label>
+                                    <textarea class="form-control hrm-input" name="observations" rows="3" placeholder="Observaciones adicionales">{{ user_obj.observations|default:'' }}</textarea>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="card border-0 shadow-sm mt-4">
-                            <div class="card-header bg-light border-0">
-                                <h6 class="mb-0 text-white">
-                                    <i class="fas fa-envelope mr-2"></i>Información de Contacto
-                                </h6>
-                            </div>
-                            <div class="card-body">
+                        <div class="hrm-form-section">
+                            <div class="hrm-form-section-header"><i class="fas fa-envelope"></i> Información de Contacto</div>
+                            <div class="hrm-form-section-body">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Correo Electrónico *</label>
-                                        <input type="email" class="form-control" 
-                                               value="{{ user_obj.email }}"
-                                               name="email" required>
+                                        <label class="form-label font-weight-bold">Correo Electrónico *</label>
+                                        <input type="email" class="form-control hrm-input" value="{{ user_obj.email }}" name="email" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Usuario</label>
-                                        <input type="text" class="form-control" 
-                                               value="{{ user_obj.username }}"
-                                               name="user" required>
+                                        <label class="form-label font-weight-bold">Usuario *</label>
+                                        <input type="text" class="form-control hrm-input" value="{{ user_obj.username }}" name="user" required>
                                     </div>
                                 </div>
-                                
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Nueva Contraseña</label>
-                                        <input type="password" class="form-control" 
-                                               name="password" placeholder="Dejar en blanco para mantener">
+                                        <label class="form-label font-weight-bold">Nueva Contraseña</label>
+                                        <input type="password" class="form-control hrm-input" name="password" placeholder="Dejar en blanco para mantener">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small">Sucursal *</label>
-                                        <select class="form-control" name="subsidiary" required>
+                                        <label class="form-label font-weight-bold">Sucursal *</label>
+                                        <select class="form-control hrm-input" name="subsidiary" required>
                                             <option value="">Seleccione una sucursal</option>
                                             {% for s in subsidiary_set %}
-                                                {% if user_obj.subsidiary.id == s.id %}
-                                                    <option selected value="{{ s.id }}">{{ s.name }}</option>
-                                                {% else %}
-                                                    <option value="{{ s.id }}">{{ s.name }}</option>
-                                                {% endif %}
+                                                <option value="{{ s.id }}" {% if user_obj.subsidiary.id == s.id %}selected{% endif %}>{{ s.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -214,112 +132,48 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Columna derecha - Foto y permisos -->
                     <div class="col-lg-4">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-light border-0">
-                                <h6 class="mb-0 text-white">
-                                    <i class="fas fa-camera mr-2"></i>Foto del Colaborador
-                                </h6>
-                            </div>
-                            <div class="card-body text-center">
+                        <div class="hrm-form-section">
+                            <div class="hrm-form-section-header"><i class="fas fa-camera"></i> Foto del Colaborador</div>
+                            <div class="hrm-form-section-body text-center">
                                 <div class="mb-3">
-                                    <img id="blah" class="img-fluid rounded-circle border" 
-                                         width="150" height="150" 
-                                         src="{% if user_obj.photo %}{{ user_obj.photo.url }}{% else %}{% static 'img/employee/employee.jpg' %}{% endif %}"
-                                         style="object-fit: cover;">
+                                    <img id="blah" class="img-fluid rounded-circle border" width="150" height="150"
+                                         src="{% if user_obj.photo %}{{ user_obj.photo.url }}{% else %}{% static 'img/employee/employee.jpg' %}{% endif %}" style="object-fit: cover;">
                                 </div>
-                                <div class="mb-3">
-                                    <input type="file" class="form-control-file" 
-                                           id="exampleInputEditFile" name="exampleInputFile" 
-                                           onchange="readURL(this);" accept="image/*">
-                                </div>
-                                <small class="text-muted">Formatos: JPG, PNG, GIF. Máximo 2MB</small>
+                                <input type="file" class="form-control-file" id="exampleInputEditFile" name="exampleInputFile" onchange="readURL(this);" accept="image/*">
+                                <small class="text-muted d-block mt-2">Formatos: JPG, PNG, GIF. Máximo 2MB</small>
                             </div>
                         </div>
-                        
-                        <div class="card border-0 shadow-sm mt-4">
-                            <div class="card-header bg-light border-0">
-                                <h6 class="mb-0 text-white">
-                                    <i class="fas fa-shield-alt mr-2"></i>Permisos del Sistema
-                                </h6>
-                            </div>
-                            <div class="card-body">
+                        <div class="hrm-form-section">
+                            <div class="hrm-form-section-header"><i class="fas fa-shield-alt"></i> Permisos del Sistema</div>
+                            <div class="hrm-form-section-body">
                                 <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckActive" name="editCheckActive"
-                                           {% if user_obj.is_active %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckActive">
-                                        Usuario Activo
-                                    </label>
+                                    <input type="checkbox" class="custom-control-input" id="editCheckActive" name="editCheckActive" {% if user_obj.is_active %}checked{% endif %}>
+                                    <label class="custom-control-label" for="editCheckActive">Usuario Activo</label>
                                 </div>
-                                
                                 <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxAccess" name="editCheckboxAccess"
-                                           {% if user_obj.has_access_system %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxAccess">
-                                        Acceso al Sistema
-                                    </label>
+                                    <input type="checkbox" class="custom-control-input" id="editCheckboxAccess" name="editCheckboxAccess" {% if user_obj.has_access_system %}checked{% endif %}>
+                                    <label class="custom-control-label" for="editCheckboxAccess">Acceso al Sistema</label>
                                 </div>
-
                                 <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxSales" name="editCheckboxSales"
-                                           {% if user_obj.has_access_to_sales %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxSales">
-                                        Acceso a Ventas
-                                    </label>
+                                    <input type="checkbox" class="custom-control-input" id="editCheckboxHrm" name="editCheckboxHrm" {% if user_obj.has_access_to_hrm %}checked{% endif %}>
+                                    <label class="custom-control-label" for="editCheckboxHrm">Acceso a RRHH</label>
                                 </div>
-
                                 <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxHrm" name="editCheckboxHrm"
-                                           {% if user_obj.has_access_to_hrm %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxHrm">
-                                        Acceso a RRHH
-                                    </label>
-                                </div>
-
-                                <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxFinances" name="editCheckboxFinances"
-                                           {% if user_obj.has_access_to_finances %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxFinances">
-                                        Acceso a Finanzas
-                                    </label>
-                                </div>
-
-                                <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxReport" name="editCheckboxReport"
-                                           {% if user_obj.has_access_to_report %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxReport">
-                                        Acceso a Reportes
-                                    </label>
-                                </div>
-
-                                <div class="custom-control custom-switch mb-3">
-                                    <input type="checkbox" class="custom-control-input" 
-                                           id="editCheckboxAdmin" name="editCheckboxAdmin"
-                                           {% if user_obj.has_access_to_all %}checked{% endif %}>
-                                    <label class="custom-control-label" for="editCheckboxAdmin">
-                                        Acceso Admin
-                                    </label>
+                                    <input type="checkbox" class="custom-control-input" id="editCheckboxReport" name="editCheckboxReport" {% if user_obj.has_access_to_report %}checked{% endif %}>
+                                    <label class="custom-control-label" for="editCheckboxReport">Acceso a Reportes</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times mr-2"></i>Cancelar
+            <div class="hrm-modal-footer">
+                <button type="button" class="hrm-btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>Cancelar
                 </button>
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save mr-2"></i>Actualizar Colaborador
+                <button type="submit" class="hrm-btn-primary">
+                    <i class="fas fa-save mr-1"></i>Actualizar Colaborador
                 </button>
             </div>
         </form>
@@ -327,160 +181,80 @@
 </div>
 
 <style>
-.modal-content {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.modal-header {
-    border-radius: 15px 15px 0 0;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-}
-
-.card {
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.form-control {
-    border-radius: 8px;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-}
-
-.form-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.card-header h6 {
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.modal-title {
-    font-size: 1.25rem;
-}
-
-.form-control:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-/* Estilos básicos para custom switches - solo mejoras visuales */
-.custom-switch .custom-control-label {
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #495057;
-}
-
-.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #28a745;
-    border-color: #28a745;
-}
-
-.custom-switch .custom-control-input:focus ~ .custom-control-label::before {
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-.btn {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.9);
-    z-index: 1000;
-    border-radius: 15px;
-}
+    .hrm-modal.hrm-modal-employee { border-radius: 16px; border: 2px solid #2e7d32; overflow: hidden; }
+    .hrm-modal .hrm-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: #e8f5e9;
+        border-bottom: 2px solid #2e7d32;
+        border-radius: 14px 14px 0 0;
+    }
+    .hrm-modal-title { margin: 0; font-size: 1.1rem; font-weight: 600; color: #334155; }
+    .hrm-modal-title i { margin-right: 0.5rem; color: #2e7d32; }
+    .hrm-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: #334155;
+        opacity: 0.8;
+        cursor: pointer;
+        padding: 0.25rem;
+        margin-left: auto;
+    }
+    .hrm-modal-close:hover { opacity: 1; }
+    .hrm-modal-body { background: #f1f5f9; padding: 1rem 1.25rem !important; }
+    .hrm-form-section { border-radius: 14px; border: 2px solid #e8ecf0; margin-bottom: 0.6rem; overflow: hidden; background: #fff; }
+    .hrm-form-section-header { padding: 0.6rem 1rem; background: #f8faf9; font-weight: 600; font-size: 0.9rem; color: #334155; border-bottom: 2px solid #e8ecf0; }
+    .hrm-form-section-header i { margin-right: 0.5rem; color: #2e7d32; }
+    .hrm-form-section-body { padding: 0.9rem 1rem; }
+    .hrm-input { border-radius: 10px; border: 2px solid #e2e8f0; }
+    .hrm-input:focus { border-color: #2e7d32; box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
+    .hrm-modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.25rem; background: #f8faf9; border-top: 2px solid #e8ecf0; border-radius: 0 0 14px 14px; }
+    .hrm-btn-primary { display: inline-flex; align-items: center; padding: 0.5rem 1.25rem; font-size: 0.875rem; font-weight: 500; color: #fff; background: #5d4037; border: 1.5px solid #5d4037; border-radius: 9999px; cursor: pointer; }
+    .hrm-btn-primary:hover { background: #4e342e; border-color: #4e342e; color: #fff; }
+    .hrm-btn-secondary { display: inline-flex; align-items: center; padding: 0.5rem 1.25rem; font-size: 0.875rem; font-weight: 500; color: #5d4037; background: transparent; border: 1.5px solid #5d4037; border-radius: 9999px; cursor: pointer; }
+    .hrm-btn-secondary:hover { background: #5d4037; color: #fff; }
+    .hrm-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 1000; border-radius: 14px; }
+    .custom-control-input:checked ~ .custom-control-label::before { background-color: #2e7d32; border-color: #2e7d32; }
 </style>
 
 <script type="text/javascript">
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                $('#blah').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) { $('#blah').attr('src', e.target.result); };
+        reader.readAsDataURL(input.files[0]);
     }
-
-    // Verificar que los checkboxes funcionen correctamente
-    /*$(document).ready(function() {
-        // Asegurar que los checkboxes mantengan su funcionalidad
-        $('.custom-control-input').on('change', function() {
-            console.log(`Checkbox ${$(this).attr('name')} cambió a: ${$(this).is(':checked')}`);
-        });
-        
-        // Forzar la funcionalidad básica si es necesario
-        $('.custom-control-label').on('click', function(e) {
-            let checkboxId = $(this).attr('for');
-            let checkbox = $('#' + checkboxId);
-            if (checkbox.length) {
-                checkbox.prop('checked', !checkbox.prop('checked'));
-                checkbox.trigger('change');
+}
+$('#form-edit-user').submit(function(event) {
+    event.preventDefault();
+    $('#modal-loader-edit').show();
+    var formData = new FormData(this);
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: formData,
+        cache: false,
+        processData: false,
+        contentType: false,
+        headers: {"X-CSRFToken": '{{ csrf_token }}'},
+        success: function(response) {
+            $('#modal-loader-edit').hide();
+            if (response.success) {
+                toastr.success(response.message, '¡Éxito!');
+                setTimeout(function() { location.reload(); }, 1500);
+            } else {
+                toastr.error(response.message, 'Error');
             }
-        });
-    });*/
-
-    $('#form-edit-user').submit(function(event) {
-        event.preventDefault();
-        
-        // Debug: Verificar estado final de checkboxes antes de enviar
-        console.log('=== ESTADO FINAL DE CHECKBOXES ===');
-        $('.custom-control-input').each(function() {
-            console.log(`Checkbox ${$(this).attr('name')}: ${$(this).is(':checked')}`);
-        });
-        
-        // Mostrar loader
-        $('#modal-loader-edit').show();
-        
-        let formData = new FormData(this);
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: formData,
-            cache: false,
-            processData: false,
-            contentType: false,
-            headers: {"X-CSRFToken": '{{ csrf_token }}'},
-            success: function(response) {
-                $('#modal-loader-edit').hide();
-                if (response.success) {
-                    toastr.success(response.message, '¡Éxito!');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                } else {
-                    toastr.error(response.message, 'Error');
-                }
-            },
-            error: function() {
-                $('#modal-loader-edit').hide();
-                toastr.error('Ocurrió un problema al actualizar el colaborador', 'Error');
-            }
-        });
+        },
+        error: function() {
+            $('#modal-loader-edit').hide();
+            toastr.error('Ocurrió un problema al actualizar el colaborador', 'Error');
+        }
     });
+});
 </script>

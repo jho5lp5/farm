@@ -27,8 +27,6 @@ class CustomUser(AbstractUser):
     EDUCATION_CHOICES = (
         ('1', 'PRIMARIA'), ('2', 'SECUNDARIA'), ('3', 'SUPERIOR TECNICO'),
         ('4', 'SUPERIOR UNIVERSITARIO'))
-    EMPLOYEE_CHOICES = (
-        ('1', 'SECRETARIA'), ('2', 'PROFESOR'), ('3', 'ADMINISTRADOR'))
     document = models.CharField('Documento', max_length=15, null=True, blank=True)
     birth_date = models.DateField('Fecha de nacimiento', null=True, blank=True)
     gender = models.CharField('Sexo', max_length=1, choices=GENDER_CHOICES, default='1', )
@@ -39,19 +37,14 @@ class CustomUser(AbstractUser):
     photo_thumbnail = ImageSpecField([Adjust(contrast=1.2, sharpness=1.1), ResizeToFill(100, 100)], source='photo', format='JPEG', options={'quality': 90})
     education = models.CharField('Educación', max_length=1, choices=EDUCATION_CHOICES, default='1', )
     nationality = models.CharField(max_length=2, choices=NATIONALITY_CHOICES, default='1',)
-    n_license = models.CharField(max_length=12, null=True, blank=True)
     place_of_birth = models.CharField(max_length=400, null=True, blank=True)
     marital_status = models.CharField(max_length=1, choices=MARITAL_STATUS_CHOICES, default='1', )
     cellphone = models.CharField(max_length=12, null=True, blank=True)
-    reference = models.CharField(max_length=200, null=True, blank=True)
     observations = models.CharField(max_length=400, null=True, blank=True)
     has_access_system = models.BooleanField(default=False)
-    has_access_to_students = models.BooleanField(default=False)
     has_access_to_all = models.BooleanField(default=False)
     has_access_to_hrm = models.BooleanField(default=False)
-    has_access_to_finances = models.BooleanField(default=False)
     has_access_to_report = models.BooleanField(default=False)
-    type_employee = models.CharField('Empleado', max_length=1, choices=EMPLOYEE_CHOICES, default='1', )
 
     class Meta:
         verbose_name = 'Empleado'

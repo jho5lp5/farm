@@ -193,7 +193,6 @@ def modal_user_create(request):
                 'nationality_set': CustomUser._meta.get_field('nationality').choices,
                 'education_set': CustomUser._meta.get_field('education').choices,
                 'marital_status_set': CustomUser._meta.get_field('marital_status').choices,
-                'type_employee_set': CustomUser._meta.get_field('type_employee').choices,
                 'subsidiary_set': Subsidiary.objects.all(),
             }, request),
         })
@@ -203,49 +202,89 @@ def modal_user_create(request):
 def create_user(request):
     if request.method == 'POST':
         try:
-            _username = request.POST.get('username', '')
+            _username = request.POST.get('username', '').strip()
             _password = request.POST.get('password', '')
-            _first_name = request.POST.get('first_name', '')
-            _last_name = request.POST.get('last_name', '')
-            _email = request.POST.get('email', '')
+            _first_name = request.POST.get('first_name', '').strip()
+            _last_name = request.POST.get('last_name', '').strip()
+            _email = request.POST.get('email', '').strip()
+            _document = request.POST.get('document', '').strip()
             _subsidiary_id = request.POST.get('subsidiary', '')
-            _is_active = request.POST.get('is_active', 'false')
-            _is_staff = request.POST.get('is_staff', 'false')
-            
-            if not _username or not _password or not _first_name or not _last_name:
+            _birth_date_str = request.POST.get('birth-date', '')
+            _gender = request.POST.get('gender', '')
+            _nationality = request.POST.get('nationality', '')
+            _marital_status = request.POST.get('marital-status', '')
+            _education = request.POST.get('education', '')
+            _address = request.POST.get('address', '').strip()
+            _phone = request.POST.get('phone', '').strip()
+            _cellphone = request.POST.get('cellphone', '').strip()
+            # Checkboxes: si no vienen en POST es que están desmarcados
+            _is_active = request.POST.get('customCheckActive') == 'on'
+            _has_access_system = request.POST.get('customCheckboxAccess') == 'on'
+            _has_access_to_hrm = request.POST.get('customCheckboxHrm') == 'on'
+            _has_access_to_report = request.POST.get('customCheckboxReport') == 'on'
+
+            if not _username or not _password or not _first_name or not _last_name or not _email:
                 return JsonResponse({
                     'success': False,
-                    'message': 'Los campos Usuario, Contraseña, Nombre y Apellido son obligatorios'
+                    'message': 'Los campos Usuario, Contraseña, Nombres, Apellidos y Correo son obligatorios'
                 }, status=HTTPStatus.BAD_REQUEST)
-            
-            # Verificar si el usuario ya existe
+
+            if not _subsidiary_id or _subsidiary_id == '0':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Seleccione una sucursal'
+                }, status=HTTPStatus.BAD_REQUEST)
+
             if CustomUser.objects.filter(username=_username).exists():
                 return JsonResponse({
                     'success': False,
                     'message': 'El nombre de usuario ya existe'
                 }, status=HTTPStatus.BAD_REQUEST)
-            
-            subsidiary_obj = None
-            if _subsidiary_id:
-                subsidiary_obj = Subsidiary.objects.get(id=int(_subsidiary_id))
-            
+
+            subsidiary_obj = Subsidiary.objects.get(id=int(_subsidiary_id))
+            _birth_date = None
+            if _birth_date_str:
+                try:
+                    _birth_date = datetime.strptime(_birth_date_str, '%Y-%m-%d').date()
+                except ValueError:
+                    pass
+
             user_obj = CustomUser(
                 username=_username,
                 first_name=_first_name,
                 last_name=_last_name,
                 email=_email,
+                document=_document or None,
+                birth_date=_birth_date,
+                gender=_gender or '1',
+                nationality=_nationality or '1',
+                marital_status=_marital_status or '1',
+                education=_education or '1',
+                address=_address or None,
+                phone=_phone or None,
+                cellphone=_cellphone or None,
                 subsidiary=subsidiary_obj,
-                is_active=(_is_active == 'true'),
-                is_staff=(_is_staff == 'true'),
+                is_active=_is_active,
+                is_staff=False,
+                has_access_system=_has_access_system,
+                has_access_to_hrm=_has_access_to_hrm,
+                has_access_to_report=_has_access_to_report,
             )
             user_obj.set_password(_password)
+            if request.FILES.get('exampleInputFile'):
+                user_obj.photo = request.FILES['exampleInputFile']
             user_obj.save()
-            
+
             return JsonResponse({
                 'success': True,
-                'message': 'Usuario creado exitosamente'
+                'message': 'Colaborador registrado exitosamente'
             }, status=HTTPStatus.OK)
-            
+
+        except Subsidiary.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Sucursal no válida'
+            }, status=HTTPStatus.BAD_REQUEST)
         except Exception as e:
             return JsonResponse({
                 'success': False,
@@ -264,7 +303,6 @@ def modal_user_update(request):
                 'form': t.render({
                     'user_obj': user_obj,
                     'subsidiary_set': subsidiary_set,
-                    'type_employee_set': CustomUser._meta.get_field('type_employee').choices,
                     'gender_set': CustomUser._meta.get_field('gender').choices,
                     'nationality_set': CustomUser._meta.get_field('nationality').choices,
                     'education_set': CustomUser._meta.get_field('education').choices,
@@ -308,10 +346,8 @@ def update_user(request):
             _gender = request.POST.get('gender', '')
             _subsidiary = request.POST.get('subsidiary', '')
             _education = request.POST.get('education', '')
-            _type_employee = request.POST.get('type-employee', '')
             _nationality = request.POST.get('nationality', '')
             _marital_status = request.POST.get('marital-status', '')
-            _reference = request.POST.get('reference', '')
             _observations = request.POST.get('observations', '')
             _cellphone = request.POST.get('cellphone', '')
             _address = request.POST.get('address', '')
@@ -319,30 +355,11 @@ def update_user(request):
             _user = request.POST.get('user', '')
             _password = request.POST.get('password', '')
 
-            # Checkboxes de permisos (nombres actualizados para edición)
-            _check_active = request.POST.get('editCheckActive', False)
-            _check_access = request.POST.get('editCheckboxAccess', False)
-            _check_sales = request.POST.get('editCheckboxSales', False)
-            _check_hrm = request.POST.get('editCheckboxHrm', False)
-            _check_finances = request.POST.get('editCheckboxFinances', False)
-            _check_report = request.POST.get('editCheckboxReport', False)
-            _check_admin = request.POST.get('editCheckboxAdmin', False)
-
-            # Convertir checkboxes a boolean
-            if _check_active == 'on':
-                _check_active = True
-            if _check_access == 'on':
-                _check_access = True
-            if _check_sales == 'on':
-                _check_sales = True
-            if _check_hrm == 'on':
-                _check_hrm = True
-            if _check_finances == 'on':
-                _check_finances = True
-            if _check_report == 'on':
-                _check_report = True
-            if _check_admin == 'on':
-                _check_admin = True
+            # Checkboxes: solo envían valor cuando están marcados ('on')
+            _check_active = request.POST.get('editCheckActive') == 'on'
+            _check_access = request.POST.get('editCheckboxAccess') == 'on'
+            _check_hrm = request.POST.get('editCheckboxHrm') == 'on'
+            _check_report = request.POST.get('editCheckboxReport') == 'on'
 
             # Validar campos requeridos
             if not _first_name or not _last_name or not _email:
@@ -401,7 +418,6 @@ def update_user(request):
             user_obj.is_active = _check_active
             user_obj.document = _document
             user_obj.birth_date = _birth_date
-            user_obj.type_employee = _type_employee
             user_obj.gender = _gender
             user_obj.phone = _phone
             user_obj.subsidiary = _subsidiary_obj
@@ -409,15 +425,11 @@ def update_user(request):
             user_obj.education = _education
             user_obj.nationality = _nationality
             user_obj.marital_status = _marital_status
-            user_obj.reference = _reference
             user_obj.cellphone = _cellphone
             user_obj.observations = _observations
             user_obj.has_access_system = _check_access
-            user_obj.has_access_to_sales = _check_sales
             user_obj.has_access_to_hrm = _check_hrm
-            user_obj.has_access_to_finances = _check_finances
             user_obj.has_access_to_report = _check_report
-            user_obj.has_access_to_all = _check_admin
 
             # Actualizar foto si se proporcionó una nueva
             if _photo:

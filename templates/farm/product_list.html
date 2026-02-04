@@ -5,56 +5,155 @@
 {% endblock title %}
 
 {% block body %}
-    <div class="card roboto-condensed-regular">
-        <div class="card-header p-2" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-            <div class="d-flex align-items-center">
-                <h6 class="mb-0" style="color: #495057; font-weight: 600; margin-right: 1rem;">
-                    <i class="fas fa-box mr-2" style="color: #6c757d;"></i>
-                    Gestión de Productos
-                </h6>
-                <div class="btn-group" role="group">
-                    <button type="button" 
-                            onclick="showModalView('modal_product_create')"
-                            class="btn btn-sm"
-                            style="background-color: #007bff; color: #fff; border: 1px solid #007bff; padding: 0.25rem 0.75rem; border-radius: 0.5rem; transition: all 0.2s ease;">
-                        <i class="fas fa-plus mr-1"></i> Registrar Nuevo Producto
+    <div class="plot-list-wrapper roboto-condensed-regular">
+        <div class="plot-list-card">
+            <div class="plot-list-header">
+                <h2 class="plot-list-title">
+                    <i class="fas fa-box plot-list-title-icon"></i>
+                    Productos
+                </h2>
+                <div class="plot-list-header-actions">
+                    <button type="button" onclick="showModalServiceType()"
+                            class="plot-list-btn-secondary">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Gestionar Tipos de Servicio</span>
                     </button>
-                    <button type="button" 
-                            onclick="showModalServiceType()"
-                            class="btn btn-sm"
-                            style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; padding: 0.25rem 0.75rem; border-radius: 0.5rem; margin-left: 0.5rem; transition: all 0.2s ease;">
-                        <i class="fas fa-concierge-bell mr-1"></i> Gestionar Tipos de Servicio
+                    <button type="button" onclick="showModalView('modal_product_create')"
+                            class="plot-list-btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span>Registrar Nuevo Producto</span>
                     </button>
                 </div>
             </div>
+            <div class="plot-list-body">
+                <div id="product-grid-list" class="plot-grid-container">
+                    {% include "farm/product_grid_list.html" %}
+                </div>
+            </div>
         </div>
-        <div class="card-body p-2">
-            <div id="product-grid-list"
-                 class="table-responsive">{% include "farm/product_grid_list.html" %}</div>
-        </div>
+        <div class="modal fade" id="modal-product-create" tabindex="-1" role="dialog"
+             aria-labelledby="ModalHelpTitle"
+             aria-hidden="true"></div>
+        <div class="modal fade" id="modal-product-update" tabindex="-1" role="dialog"
+             aria-labelledby="ModalHelpTitle"
+             aria-hidden="true"></div>
+        <div class="modal fade" id="modal-service-type" tabindex="-1" role="dialog"
+             aria-labelledby="ModalHelpTitle"
+             aria-hidden="true"></div>
     </div>
-    <div class="modal fade" id="modal-product-create" tabindex="-1" role="dialog"
-         aria-labelledby="ModalHelpTitle"
-         aria-hidden="true"></div>
-    <div class="modal fade" id="modal-product-update" tabindex="-1" role="dialog"
-         aria-labelledby="ModalHelpTitle"
-         aria-hidden="true"></div>
-    <div class="modal fade" id="modal-service-type" tabindex="-1" role="dialog"
-         aria-labelledby="ModalHelpTitle"
-         aria-hidden="true"></div>
 
+    <style>
+        .plot-list-wrapper {
+            --plot-bg: #fafbfc;
+            --plot-surface: #ffffff;
+            --plot-border: #2e7d32;
+            --plot-border-width: 1.5px;
+            --plot-header-green: #e8f5e9;
+            --plot-header-green-border: #2e7d32;
+            --plot-btn-contrast: #5d4037;
+            --plot-btn-contrast-hover: #4e342e;
+            --plot-text: #475569;
+            --plot-text-strong: #334155;
+            --plot-accent: #64748b;
+            --plot-accent-soft: #94a3b8;
+            --plot-hover: #f1f5f9;
+            --plot-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            --plot-shadow-lg: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .plot-list-card {
+            background: var(--plot-surface);
+            border-radius: 12px;
+            border: var(--plot-border-width) solid var(--plot-border);
+            box-shadow: var(--plot-shadow);
+            overflow: hidden;
+        }
+
+        .plot-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--plot-header-green);
+            border-bottom: var(--plot-border-width) solid var(--plot-header-green-border);
+        }
+
+        .plot-list-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--plot-text-strong);
+            letter-spacing: -0.02em;
+        }
+
+        .plot-list-title-icon {
+            color: #2e7d32;
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .plot-list-header-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .plot-list-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffffff;
+            background: var(--plot-btn-contrast);
+            border: 1.5px solid var(--plot-btn-contrast);
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .plot-list-btn-primary:hover {
+            background: var(--plot-btn-contrast-hover);
+            border-color: var(--plot-btn-contrast-hover);
+            color: #ffffff;
+            box-shadow: var(--plot-shadow);
+        }
+
+        .plot-list-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--plot-btn-contrast);
+            background: transparent;
+            border: 1.5px solid var(--plot-btn-contrast);
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .plot-list-btn-secondary:hover {
+            background: var(--plot-btn-contrast);
+            color: #ffffff;
+        }
+
+        .plot-list-body {
+            padding: 1rem 1.5rem;
+        }
+
+        .plot-grid-container {
+            min-width: 0;
+        }
+    </style>
 {% endblock body %}
 
 {% block extrajs %}
-
-<style>
-.btn-group .btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-</style>
-
 <script type="text/javascript">
     function showModalView(route) {
         $('#modal-product-create').empty()
@@ -72,7 +171,7 @@
             }
         });
     };
-    
+
     function showModalServiceType() {
         $.ajax({
             url: '/farm/modal_service_type_create/',
@@ -87,7 +186,7 @@
             }
         });
     }
-    
+
     $(document).on('click', '.item-edit', function () {
         let _pk = $(this).attr('pk');
         $('#modal-product-update').empty()
@@ -105,11 +204,9 @@
             }
         });
     });
-    
-    // Listen for service type creation/update event
+
     $(document).on('serviceTypeSaved', function() {
         location.reload();
     });
 </script>
 {% endblock extrajs %}
-

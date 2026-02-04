@@ -1,297 +1,163 @@
 {% load static %}
 {% if cost_set %}
-    <div class="card roboto-condensed-regular">
-        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
-                <i class="fas fa-list mr-2" style="color: #6c757d;"></i>
+    <div class="plot-grid-card">
+        <div class="plot-grid-header">
+            <span class="plot-grid-header-title">
+                <i class="fas fa-list"></i>
                 {% if cost_type == 'agrochemicals' %}
-                    <i class="fas fa-flask mr-2" style="color: #856404;"></i>
+                    <i class="fas fa-flask"></i>
                     Registro de Agroquímicos
                 {% elif cost_type == 'services' %}
-                    <i class="fas fa-cog mr-2" style="color: #383d41;"></i>
+                    <i class="fas fa-cog"></i>
                     Registro de Servicios
                 {% else %}
                     Registro de Costos
                 {% endif %}
-            </h6>
+            </span>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="table-crop-cycle-cost-list" class="table table-hover mb-0">
-                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                        <tr>
-                            <th class="text-center" style="width: 5%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-hashtag"></i>
-                            </th>
-                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-calendar mr-1"></i>Fecha
-                            </th>
-                            <th class="text-center" style="width: 15%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-tags mr-1"></i>Área
-                            </th>
-                            <th class="text-center" style="width: 20%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-box mr-1"></i>Concepto
-                            </th>
-                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-weight mr-1"></i>Cantidad
-                            </th>
-                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-dollar-sign mr-1"></i>Costo
-                            </th>
-                            <th class="text-center" style="width: 12%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-money-bill-wave mr-1"></i>Monto
-                            </th>
-                            <th class="text-center" style="width: 14%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-cogs mr-1"></i>Acciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-body">
-                        {% for cost in cost_set %}
-                            <tr class="align-middle" pk="{{ cost.id }}" style="border-bottom: 1px solid #e9ecef;">
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.7rem; padding: 0.25em 0.5em;">{{ forloop.counter }}</span>
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
-                                    <span style="color: #6c757d;">{{ cost.application_date|date:"d/m/Y" }}</span>
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    {% if cost.product.product_type == 'PRODUCT' %}
-                                        {% if cost.product.product_category == 'AGROQUÍMICO' %}
-                                            <span class="badge" style="background-color: #fff3cd; color: #856404; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #ffeaa7;">AGROQUÍMICO</span>
-                                        {% elif cost.product.product_category == 'FERTILIZANTE' %}
-                                            <span class="badge" style="background-color: #d1ecf1; color: #0c5460; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #bee5eb;">FERTILIZANTE</span>
-                                        {% else %}
-                                            <span class="badge" style="background-color: #f8f9fa; color: #6c757d; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #dee2e6;">{{ cost.product.get_product_category_display|default:"N/A" }}</span>
-                                        {% endif %}
-                                    {% elif cost.product.product_type == 'SERVICE' %}
-                                        {% if cost.product.service_type %}
-                                            <span class="badge" style="background-color: #e2e3e5; color: #383d41; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #d6d8db;">{{ cost.product.service_type.name }}</span>
-                                        {% else %}
-                                            <span class="badge" style="background-color: #f8f9fa; color: #6c757d; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #dee2e6;">SERVICIO</span>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="badge" style="background-color: #f8f9fa; color: #6c757d; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #dee2e6;">-</span>
-                                    {% endif %}
-                                </td>
-                                <td style="padding: 0.5rem;">
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2">
-                                            {% if cost.product.product_type == 'PRODUCT' %}
-                                                {% if cost.product.product_category == 'AGROQUÍMICO' %}
-                                                    <i class="fas fa-flask" style="color: #856404;"></i>
-                                                {% elif cost.product.product_category == 'FERTILIZANTE' %}
-                                                    <i class="fas fa-seedling" style="color: #0c5460;"></i>
-                                                {% else %}
-                                                    <i class="fas fa-box" style="color: #6c757d;"></i>
-                                                {% endif %}
-                                            {% else %}
-                                                <i class="fas fa-cog" style="color: #6c757d;"></i>
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {% if cost.product.product_type == 'PRODUCT' %}
-                                                <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">
-                                                    {{ cost.product.name }}
-                                                </span>
-                                            {% elif cost.product.product_type == 'SERVICE' %}
-                                                <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">
-                                                    {{ cost.application_method|default:"Sin método especificado" }}
-                                                </span>
-                                            {% else %}
-                                                <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">
-                                                    {{ cost.product.name }}
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
-                                    <span style="color: #495057;">
-                                        {{ cost.quantity|floatformat:2|safe }}
-                                    </span>
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem; font-size: 0.85rem;">
-                                    {% if cost.application_cost %}
-                                        <span style="color: #28a745; font-weight: 500;">
-                                            S/ {{ cost.application_cost|floatformat:2 }}
-                                        </span>
-                                    {% elif cost.product.unit_price %}
-                                        <span style="color: #28a745; font-weight: 500;">
-                                            S/ {{ cost.product.unit_price|floatformat:2 }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    {% if cost.total_cost %}
-                                        <span class="font-weight-bold" style="color: #495057; font-size: 0.9rem;">
-                                            S/ {{ cost.total_cost|floatformat:2 }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    <button class="btn btn-sm item-edit" 
-                                            pk="{{ cost.id }}" 
-                                            title="Editar Costo"
-                                            style="background-color: transparent; border: 1px solid #dee2e6; color: #6c757d; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
-                                        <i class="fas fa-edit" style="font-size: 0.8rem;"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-                        <tr>
-                            <td colspan="6" class="text-right font-weight-bold" style="padding: 0.5rem; font-size: 0.85rem; color: #495057;">
-                                <i class="fas fa-calculator mr-2"></i>
-                                TOTAL ACUMULADO:
+        <div class="plot-grid-table-wrap">
+            <table id="table-crop-cycle-cost-list" class="plot-grid-table">
+                <thead>
+                    <tr>
+                        <th class="plot-grid-th plot-grid-th-num"><i class="fas fa-hashtag"></i></th>
+                        <th class="plot-grid-th plot-grid-th-center"><i class="fas fa-calendar"></i> Fecha</th>
+                        <th class="plot-grid-th plot-grid-th-center"><i class="fas fa-tags"></i> Área</th>
+                        <th class="plot-grid-th"><i class="fas fa-box"></i> Concepto</th>
+                        <th class="plot-grid-th plot-grid-th-center"><i class="fas fa-weight"></i> Cantidad</th>
+                        <th class="plot-grid-th plot-grid-th-center"><i class="fas fa-dollar-sign"></i> Costo</th>
+                        <th class="plot-grid-th plot-grid-th-center"><i class="fas fa-money-bill-wave"></i> Monto</th>
+                        <th class="plot-grid-th plot-grid-th-actions">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cost in cost_set %}
+                        <tr class="plot-grid-row" pk="{{ cost.id }}">
+                            <td class="plot-grid-td plot-grid-td-num">
+                                <span class="plot-grid-badge-num">{{ forloop.counter }}</span>
                             </td>
-                            <td class="text-center" style="padding: 0.5rem;">
-                                <span class="font-weight-bold" style="color: #495057; font-size: 0.9rem; background-color: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
-                                    S/ {% if total_accumulated %}{{ total_accumulated|floatformat:2 }}{% else %}0.00{% endif %}
+                            <td class="plot-grid-td plot-grid-td-center">
+                                <span class="plot-grid-text">{{ cost.application_date|date:"d/m/Y" }}</span>
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-center">
+                                {% if cost.product.product_type == 'PRODUCT' %}
+                                    {% if cost.product.product_category == 'AGROQUÍMICO' %}
+                                        <span class="plot-grid-badge-soft" style="background: #fff3cd; color: #856404;">AGROQUÍMICO</span>
+                                    {% elif cost.product.product_category == 'FERTILIZANTE' %}
+                                        <span class="plot-grid-badge-soft" style="background: #d1ecf1; color: #0c5460;">FERTILIZANTE</span>
+                                    {% else %}
+                                        <span class="plot-grid-badge-soft">{{ cost.product.get_product_category_display|default:"N/A" }}</span>
+                                    {% endif %}
+                                {% elif cost.product.product_type == 'SERVICE' %}
+                                    {% if cost.product.service_type %}
+                                        <span class="plot-grid-badge-soft" style="background: #e2e3e5; color: #383d41;">{{ cost.product.service_type.name }}</span>
+                                    {% else %}
+                                        <span class="plot-grid-badge-soft">SERVICIO</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="plot-grid-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="plot-grid-td">
+                                <span class="plot-grid-name">
+                                    {% if cost.product.product_type == 'PRODUCT' %}
+                                        {{ cost.product.name }}
+                                    {% elif cost.product.product_type == 'SERVICE' %}
+                                        {{ cost.application_method|default:"Sin método especificado" }}
+                                    {% else %}
+                                        {{ cost.product.name }}
+                                    {% endif %}
                                 </span>
                             </td>
-                            <td style="padding: 0.5rem;"></td>
+                            <td class="plot-grid-td plot-grid-td-center">
+                                <span class="plot-grid-text">{{ cost.quantity|floatformat:2|safe }}</span>
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-center">
+                                {% if cost.application_cost %}
+                                    <span class="plot-grid-text" style="color: var(--pg-active-text); font-weight: 500;">S/ {{ cost.application_cost|floatformat:2 }}</span>
+                                {% elif cost.product.unit_price %}
+                                    <span class="plot-grid-text" style="color: var(--pg-active-text); font-weight: 500;">S/ {{ cost.product.unit_price|floatformat:2 }}</span>
+                                {% else %}
+                                    <span class="plot-grid-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-center">
+                                {% if cost.total_cost %}
+                                    <span class="plot-grid-text-strong">S/ {{ cost.total_cost|floatformat:2 }}</span>
+                                {% else %}
+                                    <span class="plot-grid-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-actions">
+                                <button type="button" class="plot-grid-btn-edit item-edit" pk="{{ cost.id }}" title="Editar Costo">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
                         </tr>
-                    </tfoot>
-                </table>
-            </div>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="plot-grid-footer-inline">
+                    <tr>
+                        <td colspan="6" class="plot-grid-td plot-grid-td-right plot-grid-text-strong">
+                            <i class="fas fa-calculator"></i> TOTAL ACUMULADO:
+                        </td>
+                        <td class="plot-grid-td plot-grid-td-center">
+                            <span class="plot-grid-badge-soft plot-grid-text-strong">S/ {% if total_accumulated %}{{ total_accumulated|floatformat:2 }}{% else %}0.00{% endif %}</span>
+                        </td>
+                        <td class="plot-grid-td"></td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
-        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <small class="text-muted" style="font-size: 0.75rem;">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Total de registros: <strong>{% if cost_set %}{{ cost_set.count }}{% else %}0{% endif %}</strong>
-                    </small>
-                </div>
-                <div class="col-md-6 text-right">
-                    <small class="text-muted" style="font-size: 0.75rem;">
-                        <i class="fas fa-clock mr-1"></i>
-                        Última actualización:
-                        <strong>{{ last_update|date:"d/m/Y H:i" }}</strong>
-                    </small>
-                </div>
-            </div>
+        <div class="plot-grid-footer">
+            <span class="plot-grid-footer-item">
+                <i class="fas fa-info-circle"></i>
+                Total: <strong>{{ cost_set.count }}</strong> registro{{ cost_set.count|pluralize:"s" }}
+            </span>
+            <span class="plot-grid-footer-item">
+                <i class="fas fa-clock"></i>
+                Actualizado: <strong>{{ last_update|date:"d/m/Y H:i" }}</strong>
+            </span>
         </div>
     </div>
 {% else %}
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <div class="mb-4">
-                {% if cost_type == 'agrochemicals' %}
-                    <i class="fas fa-flask fa-5x text-muted"></i>
-                {% elif cost_type == 'services' %}
-                    <i class="fas fa-cog fa-5x text-muted"></i>
-                {% else %}
-                    <i class="fas fa-dollar-sign fa-5x text-muted"></i>
-                {% endif %}
-            </div>
-            <h4 class="text-muted mb-3">
-                {% if cost_type == 'agrochemicals' %}
-                    No hay agroquímicos registrados para este cultivo
-                {% elif cost_type == 'services' %}
-                    No hay servicios registrados para este cultivo
-                {% else %}
-                    No hay costos registrados para este cultivo
-                {% endif %}
-            </h4>
-            <p class="text-muted mb-4">
-                {% if cost_type == 'agrochemicals' %}
-                    Comienza registrando el primer agroquímico para este cultivo
-                {% elif cost_type == 'services' %}
-                    Comienza registrando el primer servicio para este cultivo
-                {% else %}
-                    Comienza registrando el primer costo para este cultivo
-                {% endif %}
-            </p>
-            <button type="button" 
-                    onclick="showModalCreate()"
-                    class="btn btn-primary btn-lg">
-                <i class="fas fa-plus mr-2"></i>
-                {% if cost_type == 'agrochemicals' %}
-                    Registrar Primer Agroquímico
-                {% elif cost_type == 'services' %}
-                    Registrar Primer Servicio
-                {% else %}
-                    Registrar Primer Costo
-                {% endif %}
-            </button>
+    <div class="plot-grid-empty">
+        <div class="plot-grid-empty-icon">
+            {% if cost_type == 'agrochemicals' %}
+                <i class="fas fa-flask"></i>
+            {% elif cost_type == 'services' %}
+                <i class="fas fa-cog"></i>
+            {% else %}
+                <i class="fas fa-dollar-sign"></i>
+            {% endif %}
         </div>
+        <h3 class="plot-grid-empty-title">
+            {% if cost_type == 'agrochemicals' %}
+                No hay agroquímicos registrados para este cultivo
+            {% elif cost_type == 'services' %}
+                No hay servicios registrados para este cultivo
+            {% else %}
+                No hay costos registrados para este cultivo
+            {% endif %}
+        </h3>
+        <p class="plot-grid-empty-text">
+            {% if cost_type == 'agrochemicals' %}
+                Comienza registrando el primer agroquímico para este cultivo
+            {% elif cost_type == 'services' %}
+                Comienza registrando el primer servicio para este cultivo
+            {% else %}
+                Comienza registrando el primer costo para este cultivo
+            {% endif %}
+        </p>
+        <button type="button" onclick="showModalCreate()" class="plot-grid-empty-btn">
+            <i class="fas fa-plus"></i>
+            {% if cost_type == 'agrochemicals' %}
+                Registrar Primer Agroquímico
+            {% elif cost_type == 'services' %}
+                Registrar Primer Servicio
+            {% else %}
+                Registrar Primer Costo
+            {% endif %}
+        </button>
     </div>
 {% endif %}
-
-<style>
-.table {
-    font-size: 0.85rem;
-    margin-bottom: 0;
-}
-
-.table th {
-    border-top: none;
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-    padding: 0.5rem;
-    vertical-align: middle;
-}
-
-.table td {
-    vertical-align: middle;
-    border-top: 1px solid #e9ecef;
-    padding: 0.5rem;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f8f9fa;
-    transition: background-color 0.15s ease;
-}
-
-.table tbody tr {
-    border-bottom: 1px solid #e9ecef;
-}
-
-.badge {
-    font-size: 0.7rem;
-    padding: 0.25em 0.5em;
-    border-radius: 0.25rem;
-}
-
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
-}
-
-.btn-sm:hover {
-    background-color: #e9ecef;
-    border-color: #adb5bd;
-    color: #495057;
-}
-
-.card-header h6 {
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.table-responsive {
-    border: none;
-}
-
-.table tfoot {
-    font-size: 0.85rem;
-}
-
-.table tfoot td {
-    border-top: 2px solid #dee2e6;
-    border-bottom: none;
-}
-</style>
 

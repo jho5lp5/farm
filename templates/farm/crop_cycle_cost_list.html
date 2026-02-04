@@ -134,6 +134,43 @@
          aria-labelledby="ModalHelpTitle"
          aria-hidden="true"></div>
 
+<style>
+.plot-grid-card { --pg-bg: #fafbfc; --pg-surface: #ffffff; --pg-border: #2e7d32; --pg-border-width: 1.5px; --pg-header-green: #e8f5e9; --pg-header-green-border: #2e7d32; --pg-btn-contrast: #5d4037; --pg-btn-contrast-hover: #4e342e; --pg-text: #475569; --pg-text-strong: #334155; --pg-accent: #64748b; --pg-accent-soft: #94a3b8; --pg-hover: #f1f5f9; --pg-active-bg: #e8f5e9; --pg-active-text: #2e7d32; --pg-inactive-bg: #f5f5f5; --pg-inactive-text: #757575; --pg-shadow: 0 1px 3px rgba(15, 23, 42, 0.06); background: var(--pg-surface); border-radius: 10px; border: var(--pg-border-width) solid var(--pg-border); box-shadow: var(--pg-shadow); overflow: hidden; }
+.plot-grid-header { padding: 0.875rem 1.25rem; background: var(--pg-header-green); border-bottom: var(--pg-border-width) solid var(--pg-header-green-border); }
+.plot-grid-header-title { font-size: 0.9rem; font-weight: 600; color: var(--pg-text-strong); letter-spacing: 0.02em; }
+.plot-grid-header-title i { margin-right: 0.5rem; color: #2e7d32; }
+.plot-grid-table-wrap { overflow-x: auto; }
+.plot-grid-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.plot-grid-th { text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: var(--pg-text-strong); text-transform: uppercase; letter-spacing: 0.04em; background: var(--pg-header-green); border-bottom: var(--pg-border-width) solid var(--pg-header-green-border); }
+.plot-grid-th-right { text-align: right; }
+.plot-grid-th-num { width: 5%; text-align: center; }
+.plot-grid-th-center { text-align: center; }
+.plot-grid-th-actions { width: 10%; text-align: center; }
+.plot-grid-row { transition: background 0.15s ease; }
+.plot-grid-row:hover { background: var(--pg-hover); }
+.plot-grid-td { padding: 0.75rem 1rem; border-bottom: 1px solid #e8ecf0; vertical-align: middle; color: var(--pg-text); }
+.plot-grid-td-right { text-align: right; }
+.plot-grid-td-num, .plot-grid-td-center, .plot-grid-td-actions { text-align: center; }
+.plot-grid-name { font-weight: 600; color: var(--pg-text-strong); display: block; }
+.plot-grid-text { display: block; font-size: 0.875rem; }
+.plot-grid-text-strong { font-weight: 600; color: var(--pg-text-strong); }
+.plot-grid-muted { color: var(--pg-accent-soft); }
+.plot-grid-footer-inline { background: var(--pg-bg); }
+.plot-grid-footer-inline td { border-top: var(--pg-border-width) solid var(--pg-border); padding: 0.75rem 1rem; font-size: 0.875rem; }
+.plot-grid-badge-num { display: inline-flex; align-items: center; justify-content: center; min-width: 1.75rem; padding: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 500; color: var(--pg-accent); background: var(--pg-hover); border-radius: 6px; }
+.plot-grid-badge-soft { display: inline-block; padding: 0.25rem 0.6rem; font-size: 0.8rem; font-weight: 500; color: var(--pg-text-strong); background: var(--pg-hover); border-radius: 6px; }
+.plot-grid-btn-edit { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; padding: 0; color: #fff; background: var(--pg-btn-contrast); border: 1.5px solid var(--pg-btn-contrast); border-radius: 9999px; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; }
+.plot-grid-btn-edit:hover { background: var(--pg-btn-contrast-hover); border-color: var(--pg-btn-contrast-hover); color: #fff; }
+.plot-grid-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding: 0.75rem 1.25rem; background: var(--pg-bg); border-top: var(--pg-border-width) solid var(--pg-border); font-size: 0.8rem; color: var(--pg-text); }
+.plot-grid-footer-item strong { color: var(--pg-text-strong); }
+.plot-grid-footer-item i { margin-right: 0.35rem; color: var(--pg-accent-soft); }
+.plot-grid-empty { text-align: center; padding: 3rem 2rem; background: var(--pg-surface); border-radius: 10px; border: var(--pg-border-width) dashed var(--pg-border); }
+.plot-grid-empty-icon { width: 4rem; height: 4rem; margin: 0 auto 1.25rem; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--pg-bg); color: var(--pg-accent-soft); font-size: 1.75rem; }
+.plot-grid-empty-title { font-size: 1.125rem; font-weight: 600; color: var(--pg-text-strong); margin: 0 0 0.5rem; }
+.plot-grid-empty-text { font-size: 0.9rem; color: var(--pg-text); margin: 0 0 1.5rem; }
+.plot-grid-empty-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; font-size: 0.9rem; font-weight: 500; color: #fff; background: var(--pg-btn-contrast); border: 1.5px solid var(--pg-btn-contrast); border-radius: 9999px; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; }
+.plot-grid-empty-btn:hover { background: var(--pg-btn-contrast-hover); border-color: var(--pg-btn-contrast-hover); color: #fff; }
+</style>
 {% endblock body %}
 
 {% block extrajs %}

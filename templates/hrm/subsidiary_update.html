@@ -1,11 +1,10 @@
 <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-    <div class="modal-content roboto-condensed-regular">
-        <div class="modal-header bg-warning text-white">
-            <h5 class="modal-title">
-                <i class="fas fa-edit mr-2"></i>
+    <div class="modal-content roboto-condensed-regular hrm-modal hrm-modal-subsidiary">
+        <div class="modal-header" style="background-color: #97bf99;">
+            <h5 class="modal-title text-white">
                 Actualizar Sucursal
             </h5>
-            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="hrm-modal-close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -13,17 +12,15 @@
         <form id="form-subsidiary-update" action="{% url 'apps.hrm:update_subsidiary' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" value="{{ subsidiary_obj.id }}" id="id-pk" name="pk">
-            
-            <div class="modal-body p-4">
+
+            <div class="hrm-modal-body modal-body p-4">
                 <!-- Información Básica -->
-                <div class="card border-primary mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0 text-primary">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Información Básica
-                        </h6>
+                <div class="hrm-form-section">
+                    <div class="hrm-form-section-header">
+                        <i class="fas fa-info-circle"></i>
+                        Información Básica
                     </div>
-                    <div class="card-body">
+                    <div class="hrm-form-section-body">
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -31,57 +28,30 @@
                                         <i class="fas fa-hashtag mr-1"></i>
                                         Serie Sucursal
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
                                            id="id-serial"
                                            maxlength="4"
-                                           name="serial" 
+                                           name="serial"
                                            value="{{ subsidiary_obj.serial|default:'' }}"
                                            placeholder="Ej: 001">
                                     <small class="form-text text-muted">Máximo 4 caracteres</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-9">
                                 <div class="form-group">
                                     <label class="form-label font-weight-bold">
                                         <i class="fas fa-building mr-1"></i>
                                         Nombre de la Sucursal
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-name" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-name"
                                            maxlength="100"
-                                           name="name" 
+                                           name="name"
                                            value="{{ subsidiary_obj.name }}"
                                            placeholder="Ingrese el nombre de la sucursal"
                                            required>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label font-weight-bold">
-                                        <i class="fas fa-camera mr-1"></i>
-                                        Foto de la Sucursal
-                                    </label>
-                                    {% if subsidiary_obj.photo %}
-                                        <div class="mb-2">
-                                            <img src="{{ subsidiary_obj.photo.url }}" 
-                                                 alt="Foto actual" 
-                                                 class="img-thumbnail" 
-                                                 style="max-width: 100px; max-height: 100px;">
-                                        </div>
-                                    {% endif %}
-                                    <div class="custom-file">
-                                        <input type="file" 
-                                               class="custom-file-input" 
-                                               id="id-photo" 
-                                               name="photo" 
-                                               accept="image/*">
-                                        <label class="custom-file-label" for="id-photo">
-                                            <i class="fas fa-upload mr-1"></i>Cambiar imagen
-                                        </label>
-                                    </div>
-                                    <small class="form-text text-muted">Formatos: JPG, PNG, GIF</small>
                                 </div>
                             </div>
                         </div>
@@ -89,14 +59,12 @@
                 </div>
 
                 <!-- Información de Contacto -->
-                <div class="card border-info mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0 text-info">
-                            <i class="fas fa-address-book mr-2"></i>
-                            Información de Contacto
-                        </h6>
+                <div class="hrm-form-section">
+                    <div class="hrm-form-section-header">
+                        <i class="fas fa-address-book"></i>
+                        Información de Contacto
                     </div>
-                    <div class="card-body">
+                    <div class="hrm-form-section-body">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -104,11 +72,11 @@
                                         <i class="fas fa-phone mr-1"></i>
                                         Teléfono
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm"
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
                                            data-inputmask="'mask': ['999-999-999 [x99999]', '+099 99 99 9999[9]-9999']"
-                                           data-mask 
-                                           id="id-phone" 
+                                           data-mask
+                                           id="id-phone"
                                            name="phone"
                                            value="{{ subsidiary_obj.phone|default:'' }}"
                                            placeholder="Ej: 01-123-4567">
@@ -120,11 +88,11 @@
                                         <i class="fas fa-envelope mr-1"></i>
                                         Correo Electrónico
                                     </label>
-                                    <input type="email" 
-                                           class="form-control form-control-sm" 
-                                           id="id-email" 
+                                    <input type="email"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-email"
                                            maxlength="45"
-                                           name="email" 
+                                           name="email"
                                            value="{{ subsidiary_obj.email|default:'' }}"
                                            placeholder="sucursal@empresa.com">
                                 </div>
@@ -135,11 +103,11 @@
                                         <i class="fas fa-map-marker-alt mr-1"></i>
                                         Dirección
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-address" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-address"
                                            maxlength="200"
-                                           name="address" 
+                                           name="address"
                                            value="{{ subsidiary_obj.address|default:'' }}"
                                            placeholder="Ingrese la dirección completa">
                                 </div>
@@ -149,14 +117,12 @@
                 </div>
 
                 <!-- Información Empresarial -->
-                <div class="card border-success mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0 text-success">
-                            <i class="fas fa-briefcase mr-2"></i>
-                            Información Empresarial
-                        </h6>
+                <div class="hrm-form-section">
+                    <div class="hrm-form-section-header">
+                        <i class="fas fa-briefcase"></i>
+                        Información Empresarial
                     </div>
-                    <div class="card-body">
+                    <div class="hrm-form-section-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -164,11 +130,11 @@
                                         <i class="fas fa-id-card mr-1"></i>
                                         RUC
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-ruc" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-ruc"
                                            maxlength="11"
-                                           name="ruc" 
+                                           name="ruc"
                                            value="{{ subsidiary_obj.ruc|default:'' }}"
                                            placeholder="11 dígitos"
                                            required>
@@ -180,11 +146,11 @@
                                         <i class="fas fa-building mr-1"></i>
                                         Razón Social
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-business-name" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-business-name"
                                            maxlength="100"
-                                           name="business-name" 
+                                           name="business-name"
                                            value="{{ subsidiary_obj.business_name|default:'' }}"
                                            placeholder="Razón social de la empresa"
                                            required>
@@ -195,14 +161,12 @@
                 </div>
 
                 <!-- Información del Representante -->
-                <div class="card border-warning mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0 text-warning">
-                            <i class="fas fa-user-tie mr-2"></i>
-                            Información del Representante
-                        </h6>
+                <div class="hrm-form-section">
+                    <div class="hrm-form-section-header">
+                        <i class="fas fa-user-tie"></i>
+                        Información del Representante
                     </div>
-                    <div class="card-body">
+                    <div class="hrm-form-section-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -210,11 +174,11 @@
                                         <i class="fas fa-id-badge mr-1"></i>
                                         DNI del Representante
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-representative-dni" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-representative-dni"
                                            maxlength="45"
-                                           name="representative-dni" 
+                                           name="representative-dni"
                                            value="{{ subsidiary_obj.representative_dni|default:'' }}"
                                            placeholder="Número de documento">
                                 </div>
@@ -225,11 +189,11 @@
                                         <i class="fas fa-user mr-1"></i>
                                         Nombre del Representante
                                     </label>
-                                    <input type="text" 
-                                           class="form-control form-control-sm" 
-                                           id="id-representative-name" 
+                                    <input type="text"
+                                           class="form-control form-control-sm hrm-input"
+                                           id="id-representative-name"
                                            maxlength="100"
-                                           name="representative-name" 
+                                           name="representative-name"
                                            value="{{ subsidiary_obj.representative_name|default:'' }}"
                                            placeholder="Nombre completo del representante">
                                 </div>
@@ -239,50 +203,35 @@
                 </div>
 
                 <!-- Observaciones -->
-                <div class="card border-secondary">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0 text-secondary">
-                            <i class="fas fa-sticky-note mr-2"></i>
-                            Observaciones
-                        </h6>
+                <div class="hrm-form-section">
+                    <div class="hrm-form-section-header">
+                        <i class="fas fa-sticky-note"></i>
+                        Observaciones
                     </div>
-                    <div class="card-body">
-                        <div class="form-group">
+                    <div class="hrm-form-section-body">
+                        <div class="form-group mb-0">
                             <label class="form-label font-weight-bold">
                                 <i class="fas fa-comment mr-1"></i>
-                                Observaciones Generales
+                                Observaciones
                             </label>
-                            <textarea class="form-control form-control-sm"
-                                      id="id-observation-input" 
+                            <textarea class="form-control form-control-sm hrm-input"
+                                      id="id-observation-input"
                                       maxlength="500"
                                       name="observation-input"
                                       rows="3"
-                                      placeholder="Ingrese observaciones adicionales si es necesario">{{ subsidiary_obj.observation|default:'' }}</textarea>
-                            <small class="form-text text-muted">Máximo 500 caracteres</small>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label font-weight-bold">
-                                <i class="fas fa-align-left mr-1"></i>
-                                Descripción Textual
-                            </label>
-                            <textarea class="form-control form-control-sm"
-                                      id="id-text-description" 
-                                      maxlength="500"
-                                      name="text-description"
-                                      rows="3"
-                                      placeholder="Ingrese una descripción textual de la sucursal">{{ subsidiary_obj.text_description|default:'' }}</textarea>
+                                      placeholder="Ingrese observaciones si es necesario">{{ subsidiary_obj.observation|default:'' }}</textarea>
                             <small class="form-text text-muted">Máximo 500 caracteres</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <div class="hrm-modal-footer">
+                <button type="button" class="hrm-btn-secondary" data-dismiss="modal">
                     <i class="fas fa-times mr-1"></i>
                     Cancelar
                 </button>
-                <button id="update-subsidiary" type="submit" class="btn btn-warning">
+                <button id="update-subsidiary" type="submit" class="hrm-btn-primary">
                     <i class="fas fa-save mr-1"></i>
                     Actualizar Sucursal
                 </button>
@@ -291,18 +240,129 @@
     </div>
 </div>
 
+<style>
+    .hrm-modal.hrm-modal-subsidiary {
+        border-radius: 16px;
+        border: 2px solid #2e7d32;
+        overflow: hidden;
+    }
+    .hrm-modal .hrm-modal-header {
+        padding: 1rem 1.25rem;
+        background: #e8f5e9;
+        border-bottom: 2px solid #2e7d32;
+        border-radius: 14px 14px 0 0;
+    }
+    .hrm-modal-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #334155;
+    }
+    .hrm-modal-title i {
+        margin-right: 0.5rem;
+        color: #2e7d32;
+    }
+    .hrm-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #334155;
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    .hrm-modal-close:hover {
+        opacity: 1;
+    }
+    .hrm-modal-body {
+        background: #f1f5f9;
+        padding: 1rem 1.25rem !important;
+    }
+    .hrm-form-section {
+        border-radius: 14px;
+        border: 2px solid #e8ecf0;
+        margin-bottom: 0.6rem;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .hrm-form-section-header {
+        padding: 0.6rem 1rem;
+        background: #f8faf9;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #334155;
+        border-bottom: 2px solid #e8ecf0;
+    }
+    .hrm-form-section-header i {
+        margin-right: 0.5rem;
+        color: #2e7d32;
+    }
+    .hrm-form-section-body {
+        padding: 0.9rem 1rem;
+    }
+    .hrm-input {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+    }
+    .hrm-input:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+    }
+    .hrm-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+        background: #f8faf9;
+        border-top: 2px solid #e8ecf0;
+        border-radius: 0 0 14px 14px;
+    }
+    .hrm-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #fff;
+        background: #5d4037;
+        border: 1.5px solid #5d4037;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .hrm-btn-primary:hover {
+        background: #4e342e;
+        border-color: #4e342e;
+        color: #fff;
+    }
+    .hrm-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #5d4037;
+        background: transparent;
+        border: 1.5px solid #5d4037;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+    .hrm-btn-secondary:hover {
+        background: #5d4037;
+        color: #fff;
+    }
+</style>
+
 <script type="text/javascript">
 $(document).ready(function() {
-    // Inicializar máscaras de input
     if ($.fn.inputmask) {
         $('[data-mask]').inputmask();
     }
 
-    // Validación del formulario
     $('#form-subsidiary-update').submit(function (event) {
         event.preventDefault();
-        
-        // Validar campos requeridos
+
         let isValid = true;
         $(this).find('[required]').each(function() {
             if (!$(this).val().trim()) {
@@ -318,11 +378,10 @@ $(document).ready(function() {
             return;
         }
 
-        // Mostrar loading
         $('#update-subsidiary').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Actualizando...');
-        
+
         let data = new FormData($('#form-subsidiary-update').get(0));
-        
+
         $.ajax({
             url: $(this).attr('action'),
             type: $(this).attr('method'),
@@ -351,15 +410,8 @@ $(document).ready(function() {
         });
     });
 
-    // Remover clase de error cuando el usuario empiece a escribir
     $('input, textarea').on('input', function() {
         $(this).removeClass('is-invalid');
-    });
-
-    // Manejar la visualización del nombre del archivo seleccionado
-    $('.custom-file-input').on('change', function() {
-        let fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').html('<i class="fas fa-image mr-1"></i>' + fileName);
     });
 });
 </script>

@@ -1,189 +1,354 @@
 {% load static %}
 {% if crop_type_set %}
-    <div class="card roboto-condensed-regular">
-        <div class="card-header" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-            <h6 class="mb-0" style="color: #495057; font-weight: 600;">
-                <i class="fas fa-list mr-2" style="color: #6c757d;"></i>
+    <div class="plot-grid-card">
+        <div class="plot-grid-header">
+            <span class="plot-grid-header-title">
+                <i class="fas fa-list"></i>
                 Lista de Tipos de Cultivo
-            </h6>
+            </span>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table id="table-crop-type-list" class="table table-hover mb-0">
-                    <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                        <tr>
-                            <th class="text-center" style="width: 5%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-hashtag"></i>
-                            </th>
-                            <th class="text-center" style="width: 30%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-tag mr-1"></i>Nombre
-                            </th>
-                            <th class="text-center" style="width: 45%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-align-left mr-1"></i>Descripción
-                            </th>
-                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-toggle-on mr-1"></i>Estado
-                            </th>
-                            <th class="text-center" style="width: 10%; color: #495057; font-weight: 600;">
-                                <i class="fas fa-cogs mr-1"></i>Acciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-body">
-                        {% for ct in crop_type_set %}
-                            <tr class="align-middle" pk="{{ ct.id }}" style="border-bottom: 1px solid #e9ecef;">
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    <span class="badge" style="background-color: #e9ecef; color: #495057; font-size: 0.7rem; padding: 0.25em 0.5em;">{{ forloop.counter }}</span>
-                                </td>
-                                <td style="padding: 0.5rem;">
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2">
-                                            <i class="fas fa-seedling" style="color: #6c757d; font-size: 1rem;"></i>
-                                        </div>
-                                        <div>
-                                            <span class="font-weight-bold" style="color: #495057; font-size: 0.85rem;">{{ ct.name }}</span>
-                                        </div>
+        <div class="plot-grid-table-wrap">
+            <table id="table-crop-type-list" class="plot-grid-table">
+                <thead>
+                    <tr>
+                        <th class="plot-grid-th plot-grid-th-num">#</th>
+                        <th class="plot-grid-th plot-grid-th-name">Nombre</th>
+                        <th class="plot-grid-th plot-grid-th-desc">Descripción</th>
+                        <th class="plot-grid-th plot-grid-th-status">Estado</th>
+                        <th class="plot-grid-th plot-grid-th-actions">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ct in crop_type_set %}
+                        <tr class="plot-grid-row" pk="{{ ct.id }}">
+                            <td class="plot-grid-td plot-grid-td-num">
+                                <span class="plot-grid-badge-num">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-name">
+                                <div class="plot-grid-name-cell">
+                                    <span class="plot-grid-name-icon"><i class="fas fa-seedling"></i></span>
+                                    <div class="plot-grid-name-content">
+                                        <span class="plot-grid-name">{{ ct.name }}</span>
                                     </div>
-                                </td>
-                                <td style="padding: 0.5rem;">
-                                    {% if ct.description %}
-                                        <span class="text-truncate d-block" style="max-width: 400px; font-size: 0.85rem;" title="{{ ct.description }}">
-                                            {{ ct.description|truncatewords:20 }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    {% if ct.is_active %}
-                                        <span class="badge" style="background-color: #d1e7dd; color: #0f5132; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #badbcc;">
-                                            <i class="fas fa-check-circle mr-1"></i>Activo
-                                        </span>
-                                    {% else %}
-                                        <span class="badge" style="background-color: #e2e3e5; color: #383d41; font-size: 0.7rem; padding: 0.25em 0.5em; border: 1px solid #d6d8db;">
-                                            <i class="fas fa-times-circle mr-1"></i>Inactivo
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center" style="padding: 0.5rem;">
-                                    <button class="btn btn-sm item-edit" 
-                                            pk="{{ ct.id }}" 
-                                            title="Editar Tipo de Cultivo"
-                                            style="background-color: transparent; border: 1px solid #dee2e6; color: #6c757d; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
-                                        <i class="fas fa-edit" style="font-size: 0.8rem;"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-desc">
+                                {% if ct.description %}
+                                    <span class="plot-grid-text plot-grid-desc-long" title="{{ ct.description }}">
+                                        {{ ct.description|truncatewords:20 }}
+                                    </span>
+                                {% else %}
+                                    <span class="plot-grid-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-status">
+                                {% if ct.is_active %}
+                                    <span class="plot-grid-status plot-grid-status-active">
+                                        <i class="fas fa-check-circle"></i> Activo
+                                    </span>
+                                {% else %}
+                                    <span class="plot-grid-status plot-grid-status-inactive">
+                                        <i class="fas fa-times-circle"></i> Inactivo
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="plot-grid-td plot-grid-td-actions">
+                                <button class="plot-grid-btn-edit item-edit" pk="{{ ct.id }}" title="Editar Tipo de Cultivo">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <div class="card-footer" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <small class="text-muted" style="font-size: 0.75rem;">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Total de tipos de cultivo: <strong>{{ crop_type_set.count }}</strong>
-                    </small>
-                </div>
-                <div class="col-md-6 text-right">
-                    <small class="text-muted" style="font-size: 0.75rem;">
-                        <i class="fas fa-clock mr-1"></i>
-                        Última actualización: <strong>{{ "now"|date:"d/m/Y H:i" }}</strong>
-                    </small>
-                </div>
-            </div>
+        <div class="plot-grid-footer">
+            <span class="plot-grid-footer-item">
+                <i class="fas fa-info-circle"></i>
+                Total: <strong>{{ crop_type_set.count }}</strong> tipo{{ crop_type_set.count|pluralize:"s" }} de cultivo
+            </span>
+            <span class="plot-grid-footer-item">
+                <i class="fas fa-clock"></i>
+                Actualizado: <strong>{% now "d/m/Y H:i" %}</strong>
+            </span>
         </div>
     </div>
 {% else %}
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <div class="mb-4">
-                <i class="fas fa-seedling fa-5x text-muted"></i>
-            </div>
-            <h4 class="text-muted mb-3">No hay tipos de cultivo registrados</h4>
-            <p class="text-muted mb-4">
-                Comienza registrando el primer tipo de cultivo
-            </p>
-            <button type="button" 
-                    onclick="showModalView('modal_crop_type_create')"
-                    class="btn btn-primary btn-lg">
-                <i class="fas fa-plus mr-2"></i>
-                Registrar Primer Tipo de Cultivo
-            </button>
+    <div class="plot-grid-empty">
+        <div class="plot-grid-empty-icon">
+            <i class="fas fa-seedling"></i>
         </div>
+        <h3 class="plot-grid-empty-title">No hay tipos de cultivo registrados</h3>
+        <p class="plot-grid-empty-text">Comienza registrando el primer tipo de cultivo.</p>
+        <button type="button" onclick="showModalView('modal_crop_type_create')" class="plot-grid-empty-btn">
+            <i class="fas fa-plus"></i>
+            Registrar Primer Tipo de Cultivo
+        </button>
     </div>
 {% endif %}
 
 <style>
-.table {
-    font-size: 0.85rem;
-    margin-bottom: 0;
-}
+    .plot-grid-card {
+        --pg-bg: #fafbfc;
+        --pg-surface: #ffffff;
+        --pg-border: #2e7d32;
+        --pg-border-width: 1.5px;
+        --pg-header-green: #e8f5e9;
+        --pg-header-green-border: #2e7d32;
+        --pg-btn-contrast: #5d4037;
+        --pg-btn-contrast-hover: #4e342e;
+        --pg-text: #475569;
+        --pg-text-strong: #334155;
+        --pg-accent: #64748b;
+        --pg-accent-soft: #94a3b8;
+        --pg-hover: #f1f5f9;
+        --pg-active-bg: #e8f5e9;
+        --pg-active-text: #2e7d32;
+        --pg-inactive-bg: #f5f5f5;
+        --pg-inactive-text: #757575;
+        --pg-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        background: var(--pg-surface);
+        border-radius: 10px;
+        border: var(--pg-border-width) solid var(--pg-border);
+        box-shadow: var(--pg-shadow);
+        overflow: hidden;
+    }
 
-.table th {
-    border-top: none;
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-    padding: 0.5rem;
-    vertical-align: middle;
-}
+    .plot-grid-header {
+        padding: 0.875rem 1.25rem;
+        background: var(--pg-header-green);
+        border-bottom: var(--pg-border-width) solid var(--pg-header-green-border);
+    }
 
-.table td {
-    vertical-align: middle;
-    border-top: 1px solid #e9ecef;
-    padding: 0.5rem;
-}
+    .plot-grid-header-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--pg-text-strong);
+        letter-spacing: 0.02em;
+    }
 
-.table-hover tbody tr:hover {
-    background-color: #f8f9fa;
-    transition: background-color 0.15s ease;
-}
+    .plot-grid-header-title i {
+        margin-right: 0.5rem;
+        color: #2e7d32;
+    }
 
-.table tbody tr {
-    border-bottom: 1px solid #e9ecef;
-}
+    .plot-grid-table-wrap {
+        overflow-x: auto;
+    }
 
-.badge {
-    font-size: 0.7rem;
-    padding: 0.25em 0.5em;
-    border-radius: 0.25rem;
-}
+    .plot-grid-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+    }
 
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
-}
+    .plot-grid-th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: var(--pg-text-strong);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        background: var(--pg-header-green);
+        border-bottom: var(--pg-border-width) solid var(--pg-header-green-border);
+    }
 
-.btn-sm:hover {
-    background-color: #e9ecef;
-    border-color: #adb5bd;
-    color: #495057;
-}
+    .plot-grid-th-num { width: 5%; text-align: center; }
+    .plot-grid-th-name { width: 25%; }
+    .plot-grid-th-desc { width: 45%; }
+    .plot-grid-th-status { width: 12%; text-align: center; }
+    .plot-grid-th-actions { width: 11%; text-align: center; }
 
-.card-header h6 {
-    font-size: 0.9rem;
-    font-weight: 600;
-}
+    .plot-grid-row {
+        transition: background 0.15s ease;
+    }
 
-.table-responsive {
-    border: none;
-}
+    .plot-grid-row:hover {
+        background: var(--pg-hover);
+    }
 
-.card-footer {
-    border-top: 1px solid #dee2e6;
-}
+    .plot-grid-td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e8ecf0;
+        vertical-align: middle;
+        color: var(--pg-text);
+    }
 
-.text-truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .plot-grid-td-num, .plot-grid-td-status, .plot-grid-td-actions { text-align: center; }
+    .plot-grid-td-name, .plot-grid-td-desc { text-align: left; }
+
+    .plot-grid-badge-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.75rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--pg-accent);
+        background: var(--pg-hover);
+        border-radius: 6px;
+    }
+
+    .plot-grid-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .plot-grid-name-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 8px;
+        background: var(--pg-hover);
+        color: #2e7d32;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .plot-grid-name-content {
+        min-width: 0;
+    }
+
+    .plot-grid-name {
+        font-weight: 600;
+        color: var(--pg-text-strong);
+        display: block;
+    }
+
+    .plot-grid-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .plot-grid-desc-long {
+        max-width: 400px;
+    }
+
+    .plot-grid-muted {
+        color: var(--pg-accent-soft);
+    }
+
+    .plot-grid-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    .plot-grid-status-active {
+        background: var(--pg-active-bg);
+        color: var(--pg-active-text);
+    }
+
+    .plot-grid-status-inactive {
+        background: var(--pg-inactive-bg);
+        color: var(--pg-inactive-text);
+    }
+
+    .plot-grid-btn-edit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        color: #ffffff;
+        background: var(--pg-btn-contrast);
+        border: 1.5px solid var(--pg-btn-contrast);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .plot-grid-btn-edit:hover {
+        background: var(--pg-btn-contrast-hover);
+        border-color: var(--pg-btn-contrast-hover);
+        color: #ffffff;
+    }
+
+    .plot-grid-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: var(--pg-bg);
+        border-top: var(--pg-border-width) solid var(--pg-border);
+        font-size: 0.8rem;
+        color: var(--pg-text);
+    }
+
+    .plot-grid-footer-item strong {
+        color: var(--pg-text-strong);
+    }
+
+    .plot-grid-footer-item i {
+        margin-right: 0.35rem;
+        color: var(--pg-accent-soft);
+    }
+
+    .plot-grid-empty {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: var(--pg-surface);
+        border-radius: 10px;
+        border: var(--pg-border-width) dashed var(--pg-border);
+    }
+
+    .plot-grid-empty-icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--pg-bg);
+        color: var(--pg-accent-soft);
+        font-size: 1.75rem;
+    }
+
+    .plot-grid-empty-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--pg-text-strong);
+        margin: 0 0 0.5rem;
+    }
+
+    .plot-grid-empty-text {
+        font-size: 0.9rem;
+        color: var(--pg-text);
+        margin: 0 0 1.5rem;
+    }
+
+    .plot-grid-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #ffffff;
+        background: var(--pg-btn-contrast);
+        border: 1.5px solid var(--pg-btn-contrast);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .plot-grid-empty-btn:hover {
+        background: var(--pg-btn-contrast-hover);
+        border-color: var(--pg-btn-contrast-hover);
+        color: #ffffff;
+    }
 </style>
-
